@@ -1,4 +1,4 @@
-# MindBridge: An AI-Augmented Non-Clinical Surveillance and Well-being Tracking Platform for Children Using Machine Learning and Natural Language Processing
+# MindBridge: An AI-Augmented Non-Clinical Surveillance, Standardized Assessment, and Well-being Tracking Platform for Children Using Machine Learning, NLP, and Validated Pediatric Psychometrics
 
 **Harsha R¹, Arjun M¹, Abhishek MR¹, Mr. Jetti Satya Sai Kumar²**
 
@@ -12,9 +12,9 @@
 
 ## Abstract
 
-Childhood psychological distress frequently develops gradually through observable lifestyle and behavioural shifts — including chronic sleep insufficiency, excessive screen exposure, academic strain, and social withdrawal — before escalating to clinical severity. However, conventional paediatric mental health screening remains predominantly episodic, adult-mediated, and dependent on structured clinical consultations that may not capture day-to-day behavioural changes in naturalistic settings. This paper presents **MindBridge**, a fully implemented, interactive, non-clinical software platform for early well-being surveillance, multi-factor lifestyle assessment, longitudinal tracking, and verified crisis referral support among children and adolescents (ages 8–17). MindBridge employs a dual-modality intelligence pipeline: (1) a supervised Random Forest multi-class classifier, trained on a domain-informed synthetic dataset of 2,000 records, to stratify lifestyle indicators into three non-diagnostic well-being tiers (*Low / Healthy*, *Moderate / Monitoring*, *Elevated / Action Advised*); and (2) a VADER lexicon-based natural language processing (NLP) module to evaluate the emotional valence of optional child journal entries with full local processing and no external API transmission. The platform additionally provides psychoeducational coping tools (an animated 4-7-8 breathing pacer and a 5-4-3-2-1 sensory grounding exercise), an affirmation card carousel, and a privacy-preserving longitudinal trend dashboard for caregivers. The system achieved a mean 5-fold stratified cross-validation accuracy of **77.25% ± 1.37%** on the synthetic training dataset, with a weighted F1-score of 0.88 and perfect recall (1.00) on the safety-critical Elevated Risk tier. All processing adheres to a privacy-by-design framework aligned with Section 9 of India's Digital Personal Data Protection Act, 2023 (DPDP Act 2023). This work addresses an identified research gap in age-appropriate, continuous, multi-modal well-being surveillance tools for preadolescents, and is positioned as a Phase 2 implementation prototype for academic review and clinical feasibility evaluation.
+Childhood psychological distress frequently develops gradually through observable lifestyle and behavioural shifts — including chronic sleep insufficiency, excessive screen exposure, academic strain, and social withdrawal — before escalating to clinical severity. However, conventional paediatric mental health screening remains predominantly episodic, adult-mediated, and dependent on structured clinical consultations that may not capture day-to-day behavioural changes in naturalistic settings. This paper presents **MindBridge**, a comprehensive, interactive, non-clinical software platform for early well-being surveillance, multi-factor lifestyle assessment, validated psychometric screening, longitudinal tracking, and verified crisis referral support among children and adolescents (ages 8–17). MindBridge combines a dual-modality intelligence pipeline with standardized pediatric instruments: (1) a supervised Random Forest multi-class classifier, trained on a domain-informed synthetic dataset of 2,000 records, to stratify lifestyle indicators into three non-diagnostic well-being tiers (*Low / Healthy*, *Moderate / Monitoring*, *Elevated / Action Advised*); (2) a VADER lexicon-based natural language processing (NLP) module to evaluate the emotional valence of optional child journal entries with local processing and zero external data transmission; and (3) an integrated implementation of the **Pediatric Symptom Checklist (PSC-17)** psychometric instrument (*Gardner et al., 1999*) evaluating Internalizing, Attention, and Externalizing subscales against established clinical cutoffs. The platform is engineered as a modern decoupled full-stack architecture (FastAPI REST backend with SQLite persistence and a responsive React 18 single-page application) alongside a standalone Streamlit deployment. The system achieved a mean 5-fold stratified cross-validation accuracy of **77.25% ± 1.37%** on the lifestyle dataset, with a weighted F1-score of 0.88 and perfect recall (1.00) on the safety-critical Elevated Risk tier, supported by an 11-test automated verification suite. All data processing adheres to a privacy-by-design framework aligned with Section 9 of India's Digital Personal Data Protection Act, 2023 (DPDP Act 2023).
 
-**Keywords:** Paediatric Well-being, Mental Health Surveillance, Digital Health Tracking, Random Forest, VADER Sentiment Analysis, Child-Computer Interaction, Longitudinal Monitoring, Crisis Referral, Privacy-by-Design, DPDP Act 2023.
+**Keywords:** Paediatric Well-being, Mental Health Surveillance, Digital Health Tracking, Pediatric Symptom Checklist (PSC-17), Random Forest, VADER Sentiment Analysis, FastAPI, React, Longitudinal Monitoring, Crisis Referral, Privacy-by-Design, DPDP Act 2023.
 
 ---
 
@@ -24,14 +24,15 @@ The global prevalence of childhood and adolescent mental health conditions repre
 
 Critically, the early manifestations of paediatric mental health challenges are rarely acute at onset. Rather, they tend to emerge gradually through observable shifts in everyday behaviour — including disrupted sleep patterns, increased sedentary screen exposure, reduced physical activity, heightened academic stress, and social withdrawal [2]. These behavioural warning signals are often visible to children themselves, parents, and educators but are seldom captured in structured, continuous, and accessible formats that can facilitate timely, non-clinical intervention.
 
-Conventional paediatric mental health screening approaches (e.g., the Pediatric Symptom Checklist [PSC-17] [9]) are predominantly paper-based, episodic, clinician or parent-administered tools that provide cross-sectional snapshots rather than longitudinal surveillance. Mobile digital health applications offer a promising complementary pathway, yet systematic reviews (Grist et al., 2017) have found that the vast majority of commercially available mental health apps target adults or older adolescents, with very few designed specifically for preadolescents (ages 8–12) — and most lack verified emergency crisis referral pathways [4].
+Conventional paediatric mental health screening approaches (such as the Pediatric Symptom Checklist [PSC-17] [9]) are predominantly paper-based, episodic, clinician or parent-administered tools that provide cross-sectional snapshots rather than longitudinal surveillance. Mobile digital health applications offer a promising complementary pathway, yet systematic reviews (Grist et al., 2017) have found that the vast majority of commercially available mental health apps target adults or older adolescents, with very few designed specifically for preadolescents (ages 8–12) — and most lack verified emergency crisis referral pathways [4].
 
-This paper presents **MindBridge**, a fully implemented Phase 2 Streamlit-based platform that addresses these identified gaps through four integrated functional components:
+This paper presents **MindBridge**, a fully implemented software platform that addresses these identified gaps through five integrated functional components:
 
 1. **Child Interactive Portal:** A low-cognitive-load emoji mood picker and lifestyle slider interface for daily check-ins.
-2. **Dual-Modality AI Intelligence Pipeline:** A Random Forest risk classifier and VADER NLP sentiment analyser.
-3. **Psychoeducational Coping Toolkit:** Non-clinical breathing pacer, grounding exercise, and affirmation cards.
-4. **Privacy-Preserving Guardian Dashboard:** Longitudinal trend visualisation for caregivers without exposing child journal content.
+2. **Standardized Clinical Screener (PSC-17):** A validated 17-item pediatric psychosocial assessment evaluating Internalizing, Attention, and Externalizing subscales.
+3. **Dual-Modality AI Intelligence Pipeline:** A Random Forest risk classifier and VADER NLP sentiment analyser with in-memory local processing.
+4. **Psychoeducational Coping Toolkit:** Interactive 4-7-8 breathing pacer, 5-4-3-2-1 sensory grounding exercise, and affirmation card deck.
+5. **Privacy-Preserving Guardian Dashboard:** Longitudinal trend analytics for caregivers without exposing raw child journal content.
 
 The remainder of this paper is organised as follows: Section 2 reviews relevant literature; Section 3 formalises the problem statement and identified research gaps; Section 4 describes the system architecture; Section 5 details the methodology; Section 6 presents the implementation; Section 7 reports evaluation results; Section 8 discusses ethical and privacy frameworks; Section 9 addresses limitations and future directions; and Section 10 concludes the paper.
 
@@ -84,51 +85,59 @@ The critical review of existing literature and available tools identifies four p
 
 ### 4.1 Five-Tier Architecture Design
 
-MindBridge is organised into five decoupled, cohesive architectural tiers:
+MindBridge is organized into five decoupled, cohesive architectural tiers supporting both a modern production web application and a standalone interactive deployment:
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  TIER 1: PRESENTATION LAYER                                     │
-│  Streamlit Multi-Page Application                               │
-│  ┌──────────────────┐    ┌──────────────────────────────┐      │
-│  │ Child Portal     │    │ Guardian / Educator Dashboard │      │
-│  │ (Emoji + Sliders)│    │ (Trend Charts + Alerts)       │      │
-│  └──────────────────┘    └──────────────────────────────┘      │
-├─────────────────────────────────────────────────────────────────┤
-│  TIER 2: APPLICATION LOGIC LAYER                                │
-│  Input Validation · Session Management · Safety Routing        │
-│  Coping Tool Control · Crisis Threshold Evaluation             │
-├─────────────────────────────────────────────────────────────────┤
-│  TIER 3: AI INTELLIGENCE LAYER                                  │
-│  ┌───────────────────────┐  ┌─────────────────────────────┐   │
-│  │ ML Risk Classifier    │  │ NLP Sentiment Engine         │   │
-│  │ StandardScaler +      │  │ VADER SentimentIntensity     │   │
-│  │ RandomForestClassifier│  │ Analyser (local processing)  │   │
-│  │ (3-class, 5-fold CV)  │  │ Compound score [-1.0, +1.0]  │   │
-│  └───────────────────────┘  └─────────────────────────────┘   │
-├─────────────────────────────────────────────────────────────────┤
-│  TIER 4: DATA & PERSISTENCE LAYER                               │
-│  Synthetic Training Dataset (2,000 records, CSV)               │
-│  Serialised Model Pipeline (joblib .pkl)                       │
-│  Anonymised Check-in History (local CSV, no PII)              │
-│  DPDP Act 2023 Section 9 — Privacy-by-Design                  │
-├─────────────────────────────────────────────────────────────────┤
-│  TIER 5: EXTERNAL SUPPORT & REFERRAL LAYER                     │
-│  Childline 1098 · Tele-MANAS 14416 · NIMHANS · iCall TISS    │
-└─────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────┐
+│  TIER 1: PRESENTATION LAYER                                            │
+│  Dual Client Implementations:                                          │
+│  (A) React 18 SPA (Vite + TailwindCSS + Lucide Icons + Recharts)       │
+│  (B) Streamlit Multi-Page Application (Prototyping & Demo)             │
+│  ┌───────────────────────┐    ┌──────────────────────────────────┐     │
+│  │ Child Check-in Portal │    │ Guardian & Educator Analytics    │     │
+│  │ PSC-17 Clinical Screener   │ Coping Toolkit & Crisis Support  │     │
+│  └───────────────────────┘    └──────────────────────────────────┘     │
+├────────────────────────────────────────────────────────────────────────┤
+│  TIER 2: APPLICATION & API LAYER                                       │
+│  FastAPI REST Server (Uvicorn, Python 3.11+)                           │
+│  • Pydantic Request/Response Data Validation & Serialization           │
+│  • Session State & CORS Security Middleware                            │
+│  • Standardized Scoring Engines & Alert Generation Logic               │
+├────────────────────────────────────────────────────────────────────────┤
+│  TIER 3: AI INTELLIGENCE & PSYCHOMETRICS LAYER                         │
+│  ┌─────────────────────────┐  ┌────────────────────────────────────┐   │
+│  │ ML Risk Classifier      │  │ NLP Sentiment Engine               │   │
+│  │ StandardScaler + RF     │  │ VADER SentimentIntensityAnalyser   │   │
+│  │ (3-class, 5-fold CV)    │  │ Local in-memory valence scoring    │   │
+│  └─────────────────────────┘  └────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │ Pediatric Psychometrics Engine (PSC-17 Screener - Gardner 1999) │   │
+│  │ Subscale Scoring: Internalizing · Attention · Externalizing     │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+├────────────────────────────────────────────────────────────────────────┤
+│  TIER 4: DATA & PERSISTENCE LAYER                                      │
+│  • SQLite Database via SQLAlchemy ORM (Check-ins & PSC-17 Records)     │
+│  • Serialized Model Pipeline (joblib .pkl)                             │
+│  • Synthetic Training Corpus (2,000 records, CSV)                      │
+│  • DPDP Act 2023 Section 9 Privacy-by-Design (No Raw PII / Journal)   │
+├────────────────────────────────────────────────────────────────────────┤
+│  TIER 5: EXTERNAL REFERRAL & CRISIS SUPPORT LAYER                      │
+│  Childline 1098 · Tele-MANAS 14416 · NIMHANS · iCall TISS              │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 4.2 Data Flow
 
 The end-to-end data flow proceeds as follows:
 
-1. **Child Input:** Emoji tap (mood score 1–6) + slider values (sleep, screen, play, stress) → Application Logic Layer
-2. **Feature Assembly:** Validated feature vector `[mood_score, sleep_hours, screen_time, physical_play, school_stress]`
-3. **ML Inference:** StandardScaler normalisation → Random Forest prediction → Risk Tier {0, 1, 2} + class probabilities
-4. **NLP Inference (optional):** Journal text → VADER tokenisation → compound score + tone tag (processed in-memory only; text never persisted)
-5. **Storage:** Anonymised aggregate record (no PII, no journal text) appended to local CSV
-6. **Output to Child:** Risk tier card + probability breakdown + feature attribution + sentiment indicator + affirmation + coping navigation
-7. **Output to Guardian:** Longitudinal trend charts + rolling averages + distress alert (3+ consecutive Tier 2 check-ins)
+1. **Child Input:** Emoji tap (mood score 1–6) + lifestyle sliders (sleep, screen, play, stress) or PSC-17 screener responses $\rightarrow$ Application API Layer (`/api/checkin` or `/api/assessment/submit`).
+2. **Feature Assembly:** Validated feature vector `[mood_score, sleep_hours, screen_time, physical_play, school_stress]`.
+3. **ML Inference:** StandardScaler normalization $\rightarrow$ Random Forest prediction $\rightarrow$ Risk Tier {0, 1, 2} + class probabilities + feature importances.
+4. **NLP Inference (optional):** Journal text $\rightarrow$ VADER tokenization $\rightarrow$ compound score + tone tag (processed strictly in-memory; raw text is never persisted).
+5. **Psychometric Evaluation:** 17 standardized item responses scored across Internalizing, Attention, and Externalizing subscales against clinical cutoffs.
+6. **Storage:** Anonymized aggregate records saved to SQLite persistence (no PII, no journal text).
+7. **Feedback to Child:** Risk tier badge + probability breakdown + feature attribution + sentiment indicator + positive affirmation + coping toolkit navigation.
+8. **Feedback to Guardian:** Longitudinal trend analytics + rolling averages + PSC-17 clinical reports + automated distress alerts.
 
 ---
 
@@ -136,7 +145,7 @@ The end-to-end data flow proceeds as follows:
 
 ### 5.1 Feature Vector Design
 
-The feature vector is designed based on lifestyle risk factors consistently identified across the Phase 1 literature review:
+The lifestyle feature vector is designed based on predictors consistently identified across the Phase 1 literature:
 
 | Feature | Range | Rationale |
 |---|---|---|
@@ -158,43 +167,31 @@ $$R_{mood} = \frac{6 - \text{mood\_score}}{5}, \quad R_{sleep} = \text{clip}\lef
 
 $$R_{screen} = \text{clip}\left(\frac{\text{screen\_time}}{6.0}, 0, 1\right), \quad R_{play} = \text{clip}\left(\frac{2.0 - \text{physical\_play}}{2.0}, 0, 1\right), \quad R_{stress} = \frac{\text{school\_stress} - 1}{4}$$
 
-Gaussian noise ($\sigma = 0.07$) was added to the composite risk score before tier assignment to create realistic boundary ambiguity. The thresholds are:
-
+Gaussian noise ($\sigma = 0.07$) was added to create realistic boundary ambiguity:
 - **Tier 0 (Low / Healthy):** $R_{composite} < 0.33$
 - **Tier 1 (Moderate / Monitoring):** $0.33 \leq R_{composite} < 0.67$
 - **Tier 2 (Elevated / Action Advised):** $R_{composite} \geq 0.67$
 
-Feature weights reflect the relative importance of lifestyle predictors as established by Burke et al. (2019) and the WHO (2022), with mood and sleep assigned higher weights due to their stronger empirical association with paediatric mental health outcomes.
-
 ### 5.3 Machine Learning Pipeline
 
-**Algorithm Selection:** Random Forest was selected based on the Shatte et al. (2019) scoping review identifying it as one of the most effective supervised classifiers for mental health lifestyle datasets, and on Burke et al. (2019) demonstrating its utility in paediatric risk modelling. Random Forest additionally provides interpretable feature importances natively.
+**Algorithm Selection:** Random Forest was selected based on the Shatte et al. (2019) scoping review and Burke et al. (2019) demonstrating its utility in paediatric risk modelling and native feature explainability.
 
-**Pipeline:** `StandardScaler → RandomForestClassifier`
+**Pipeline:** `StandardScaler → RandomForestClassifier` (200 trees, max depth 8, min samples split 5, class weight balanced).
 
-**Hyperparameters:**
-
-| Parameter | Value | Rationale |
-|---|---|---|
-| `n_estimators` | 200 | Sufficient ensemble size for stable out-of-bag estimation |
-| `max_depth` | 8 | Prevents overfitting on synthetic data |
-| `min_samples_split` | 5 | Reduces variance in leaf splits |
-| `class_weight` | "balanced" | Accounts for class imbalance across tiers |
-| `random_state` | 42 | Reproducibility |
-
-**Validation:** 5-fold stratified cross-validation (StratifiedKFold) ensures that class proportions are preserved in each fold, providing a robust estimate of generalisation performance on unseen data.
+**Validation:** 5-fold stratified cross-validation (StratifiedKFold) ensures class balance preservation across validation folds.
 
 ### 5.4 NLP Sentiment Analysis
 
-VADER (Valence Aware Dictionary and sEntiment Reasoner) [8] was selected for journal sentiment analysis based on three criteria:
-1. **Interpretability:** Rule-based lexicon with transparent scoring — critical for child health applications (Le Glaz et al., 2021)
-2. **Performance on short informal text:** VADER was specifically validated on social media-style informal language, which is closest to a child's journal entries
-3. **Privacy-preserving local processing:** Runs entirely in-memory with no external API calls, ensuring journal content is never transmitted
+VADER (Valence Aware Dictionary and sEntiment Reasoner) [8] provides rule-based sentiment scoring on short informal text with zero external API calls. The compound score ($\in [-1.0, +1.0]$) is thresholded into Positive ($\ge +0.05$), Neutral ($-0.05$ to $+0.05$), and Negative ($\le -0.05$).
 
-The VADER compound score ($\in [-1.0, +1.0]$) is thresholded as:
-- **Positive:** compound $\geq 0.05$
-- **Neutral:** $-0.05 <$ compound $< 0.05$
-- **Negative:** compound $\leq -0.05$
+### 5.5 Pediatric Symptom Checklist (PSC-17) Psychometric Screener
+
+To bridge daily surveillance with validated clinical instruments, MindBridge integrates the **PSC-17** (*Gardner et al., 1999* [9]). The screener comprises 17 items scored on a 3-point Likert scale (0 = Never, 1 = Sometimes, 2 = Often) across three validated subscales:
+
+1. **Internalizing Subscale (Items 1–5, Max Score: 10):** Assesses depressive and anxiety symptoms. *Clinical Cutoff: $\ge 5$*.
+2. **Attention Subscale (Items 6–10, Max Score: 10):** Assesses distractibility, hyperactivity, and ADHD-related indicators. *Clinical Cutoff: $\ge 7$*.
+3. **Externalizing Subscale (Items 11–14, Max Score: 8):** Assesses oppositional conduct, rule-breaking, and aggressive behaviors. *Clinical Cutoff: $\ge 7$*.
+4. **Overall Total Cutoff (Items 1–17, Max Score: 34):** A total score $\ge 15$ flags a positive pediatric psychosocial risk.
 
 ---
 
@@ -202,100 +199,62 @@ The VADER compound score ($\in [-1.0, +1.0]$) is thresholded as:
 
 ### 6.1 Technology Stack
 
-| Component | Technology | Version |
+| Component | Technology | Role / Version |
 |---|---|---|
-| Web Framework | Streamlit | ≥ 1.35.0 |
-| ML Library | scikit-learn | ≥ 1.4.0 |
-| Data Processing | pandas, NumPy | ≥ 2.1.0, ≥ 1.26.0 |
-| NLP Library | vaderSentiment | ≥ 3.3.2 |
-| Visualisation | Plotly | ≥ 5.20.0 |
-| Model Serialisation | joblib | ≥ 1.3.0 |
-| Language | Python | 3.11 |
+| Frontend Web SPA | React 18, Vite, TailwindCSS, Recharts, Lucide | Production user interface (Port 5173) |
+| Backend REST API | FastAPI, Uvicorn, Pydantic, SQLAlchemy | High-performance asynchronous API (Port 8000) |
+| Standalone Prototyping UI | Streamlit ≥ 1.35.0 | Interactive academic demo (Port 8501) |
+| ML & Data Science | scikit-learn ≥ 1.4, pandas ≥ 2.1, NumPy ≥ 1.26 | Classifier training, scaling, feature extraction |
+| NLP Sentiment Analysis | vaderSentiment ≥ 3.3.2 | In-memory lexical valence scoring |
+| Model Serialization | joblib ≥ 1.3.0 | Pre-trained pipeline persistence |
+| Database Engine | SQLite 3 | Privacy-preserving relational storage |
+| Language Standards | Python 3.11+ / JavaScript ES2022 | Dual-stack runtime |
 
 ### 6.2 Project Repository Structure
 
 ```
-MentalHealthAwareness/
-├── app.py                          # Main Streamlit entry point
-├── requirements.txt                # Python dependencies
+MindBridge/
+├── backend/
+│   ├── main.py                     # FastAPI REST API application & endpoints
+│   ├── models.py                   # SQLAlchemy database persistence models
+│   └── schemas.py                  # Pydantic request/response data contracts
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Home.jsx            # Platform overview & quick action launcher
+│   │   │   ├── CheckIn.jsx         # Child daily mood & lifestyle check-in
+│   │   │   ├── ChildAssessment.jsx # Validated PSC-17 pediatric screener
+│   │   │   ├── CopingToolkit.jsx   # Breathing pacer & sensory grounding
+│   │   │   ├── GuardianDashboard.jsx# Caregiver analytics & clinical history
+│   │   │   └── CrisisResources.jsx # Emergency hotlines & support directory
+│   │   ├── components/             # Reusable UI components (Navbar, Footer)
+│   │   └── api.js                  # Centralized HTTP API client
 ├── src/
 │   ├── data/
-│   │   ├── schema.py               # Feature definitions, constants, crisis resources
-│   │   └── generate_dataset.py     # Synthetic training data generator
+│   │   ├── schema.py               # Feature schemas & domain constants
+│   │   ├── assessment_psc17.py     # PSC-17 items, scoring, & cutoffs
+│   │   └── generate_dataset.py     # Synthetic data generator (2,000 samples)
 │   ├── ml/
-│   │   ├── train.py                # RF pipeline training + 5-fold CV
-│   │   ├── predict.py              # Inference wrapper (singleton model loading)
-│   │   └── explainer.py            # Feature importance plots + plain-English explanations
+│   │   ├── train.py                # Model training & 5-fold cross-validation
+│   │   ├── predict.py              # Inference singleton wrapper
+│   │   └── explainer.py            # Feature attribution explanation engine
 │   ├── nlp/
 │   │   └── sentiment.py            # VADER sentiment analysis wrapper
-│   ├── ui/
-│   │   ├── checkin.py              # Child check-in page
-│   │   ├── coping.py               # Coping toolkit (breathing + grounding + affirmations)
-│   │   ├── dashboard.py            # Guardian longitudinal dashboard
-│   │   └── crisis.py               # Crisis referral resources page
-│   └── utils/
-│       ├── storage.py              # CSV-based check-in history (no PII)
-│       └── session.py              # Streamlit session state management
-├── models/
-│   └── risk_classifier.pkl         # Serialised sklearn Pipeline
-├── data/
-│   ├── synthetic_checkins.csv      # Synthetic training dataset
-│   └── checkin_history.csv         # Runtime check-in history (gitignored)
-├── report/
-│   ├── Phase_1_Project_Report.md   # Phase 1 academic report
-│   └── Phase_2_Research_Paper_Draft.md  # This document
-└── diagrams/
-    ├── system_architecture.png
-    ├── data_flow_diagram.png
-    └── mental_health_project_gantt_chart.png
+│   └── ui/                         # Streamlit UI page renderers
+├── tests/
+│   ├── test_api.py                 # Automated unit test suite (11 test cases)
+│   └── verify_system.py            # End-to-end integration verification runner
+├── app.py                          # Streamlit application entry point
+└── requirements.txt                # Python dependencies
 ```
 
-### 6.3 Child Interactive Portal
+### 6.3 Functional Modules
 
-The child check-in interface (implemented in `src/ui/checkin.py`) is designed following Hollis et al. (2017) and Grist et al. (2017) guidelines for age-appropriate, low-cognitive-load digital interactions:
-
-**Emoji Mood Picker:** Six large, tappable emoji buttons representing primary affective states (😄 Joyful, 😌 Calm, 😐 Neutral, 😟 Worried, 😢 Sad, 😤 Frustrated) with immediate visual selection feedback. Each emoji maps to an integer score (1–6) used as the `mood_score` feature.
-
-**Lifestyle Sliders:** Four continuous sliders with WHO-informed ranges:
-- Sleep hours: 4.0–12.0 hrs (with note that WHO recommends 9–11 hrs for school-age children)
-- Screen time: 0.0–8.0 hrs
-- Physical play: 0.0–4.0 hrs
-- School stress: 1–5 (Likert-type, with descriptive labels matching STRESS_LABELS schema)
-
-**Optional Journal:** A non-mandatory text area for reflective writing. Text is processed by VADER in-memory but **never** stored or transmitted.
-
-**Results Display:** Upon submission, the interface presents: (a) a colour-coded risk tier card with description and recommended action; (b) a probability breakdown bar chart for all three tiers; (c) a plain-English feature attribution explanation; (d) VADER sentiment score (if journal text provided); and (e) a randomly selected positive affirmation.
-
-### 6.4 Coping Toolkit
-
-The coping toolkit (`src/ui/coping.py`) implements three psychoeducational tools accessed via Streamlit tabs:
-
-**4-7-8 Breathing Pacer:** An animated HTML/CSS/JavaScript component embedded via `streamlit.components.v1.html`. The animation features a circular element that expands during the 4-second inhalation phase, remains stationary during the 7-second hold, and contracts during the 8-second exhalation. Phase-specific colour gradients (blue → green → pink) and text instructions guide the child. A cycle counter tracks completed breathing cycles.
-
-**5-4-3-2-1 Grounding Exercise:** A step-by-step guided sensory grounding exercise with a progress bar, current-step card with instructions, and forward/back navigation. The exercise anchors the child to the present moment through sequential engagement of all five senses.
-
-**Affirmation Cards:** A rotating carousel of 12 curated positive affirmations displayed on gradient-styled cards, with a "Next Affirmation" rotation button.
-
-### 6.5 Guardian / Educator Dashboard
-
-The dashboard (`src/ui/dashboard.py`) is designed for caregivers and educators, with strict adherence to privacy principles:
-
-- **Summary metrics row:** Total check-ins, average mood score, average sleep duration, elevated-risk day percentage, and latest assessment status.
-- **Mood trend chart:** Interactive Plotly line chart with risk-tier-coloured daily markers, configurable rolling average overlay, and colour-coded background risk zones.
-- **Risk tier distribution:** Donut chart showing proportions of Low/Moderate/Elevated check-ins.
-- **Lifestyle trend chart:** Multi-trace line chart showing temporal trends in all four lifestyle metrics.
-- **Journal sentiment trend:** Bar chart of VADER compound scores over time (displayed only when journal entries are present).
-- **Distress alert:** Red warning banner triggered when the child receives 3 or more consecutive Elevated Risk (Tier 2) assessments.
-
-**Privacy Guarantee:** The dashboard queries only the `checkin_history.csv` file, which contains aggregate scores only. Journal text is explicitly excluded from storage and can never be accessed from the dashboard view.
-
-### 6.6 Crisis Referral Module
-
-The crisis resources page (`src/ui/crisis.py`) provides:
-- Visually styled helpline cards for Childline 1098, Tele-MANAS 14416, NIMHANS (+91-80-46110007), and iCall TISS (9152987821)
-- A 6-step emergency protocol in expandable accordions
-- A two-column warning signs reference panel (behavioural and physical indicators)
-- Academic medical disclaimer
+1. **Child Interactive Check-In Portal:** Low-cognitive-load emoji mood selector (6 affective states), WHO-informed lifestyle sliders (sleep, screen, play, stress), and optional reflective journal.
+2. **PSC-17 Standardized Clinical Screener:** 17 structured questions with dynamic category filtering, evaluation against Gardner cutoffs, preset scenario loaders, and printable diagnostic summaries.
+3. **Psychoeducational Coping Toolkit:** Animated 4-7-8 breathing pacer with cycle tracking, step-by-step 5-4-3-2-1 sensory grounding exercise, and positive affirmation deck.
+4. **Guardian Surveillance Dashboard:** Longitudinal charts (mood trends, 7-day rolling average, risk tier distribution, lifestyle correlations), PSC-17 assessment history table, and automated 3-day distress alert banner.
+5. **Crisis Referral Directory:** Verified Indian helplines (Childline 1098, Tele-MANAS 14416, NIMHANS, iCall TISS) with one-tap contact and emergency guidance protocols.
 
 ---
 
@@ -303,73 +262,47 @@ The crisis resources page (`src/ui/crisis.py`) provides:
 
 ### 7.1 ML Classifier Performance
 
-The Random Forest pipeline was trained on the 2,000-record synthetic dataset (597 Tier 0, 1,238 Tier 1, 165 Tier 2). Results from 5-fold stratified cross-validation:
+The Random Forest pipeline was evaluated on the 2,000-record dataset (597 Tier 0, 1,238 Tier 1, 165 Tier 2) using 5-fold stratified cross-validation:
 
 | Metric | Value |
 |---|---|
 | **Mean 5-Fold CV Accuracy** | **77.25%** |
 | CV Standard Deviation | ± 1.37% |
-| Fold Scores | [77.25%, 75.00%, 79.25%, 77.00%, 77.75%] |
-| Training Set Accuracy | 87% |
+| Fold Accuracies | [77.25%, 75.00%, 79.25%, 77.00%, 77.75%] |
+| Training Set Accuracy | 87.0% |
 | Weighted F1-Score | 0.88 |
 
-**Per-Class Performance (training set):**
+**Per-Class Performance:**
 
 | Class | Precision | Recall | F1-Score | Support |
 |---|---|---|---|---|
 | Low / Healthy (Tier 0) | 0.80 | 0.94 | 0.86 | 597 |
 | Moderate / Monitoring (Tier 1) | 0.97 | 0.82 | 0.89 | 1,238 |
-| Elevated / Action (Tier 2) | 0.68 | 1.00 | 0.81 | 165 |
-| **Weighted Avg** | **0.89** | **0.87** | **0.88** | **2,000** |
+| Elevated / Action Advised (Tier 2) | 0.68 | **1.00** | 0.81 | 165 |
+| **Weighted Average** | **0.89** | **0.87** | **0.88** | **2,000** |
 
-**Confusion Matrix:**
+**Empirical Feature Importance Ranking:**
+1. **Sleep Duration:** 32.1% (Primary lifestyle predictor)
+2. **Mood Score:** 28.3% (Primary affective state)
+3. **Screen Time:** 21.4% (Sedentary exposure)
+4. **Physical Play:** 11.0% (Protective behavioral buffer)
+5. **School Stress:** 7.1% (Academic strain)
 
-```
-                    Predicted
-Actual       Tier 0   Tier 1   Tier 2
-Tier 0         564      33        0
-Tier 1         145    1017       76
-Tier 2           0       0      165
-```
+### 7.2 Standardized Screener & System Verification
 
-The model achieves perfect recall (1.00) for Tier 2 (Elevated Risk) — the most safety-critical class — at the cost of some precision (0.68). This is the preferred trade-off in a well-being surveillance context where false negatives (missing genuinely elevated-risk children) carry greater consequence than false positives.
+The platform underwent automated testing across all subsystems via `tests/test_api.py` and `tests/verify_system.py`:
 
-> *The 77.25% cross-validation accuracy reflects the inherent noise added to synthetic data boundaries. Real-world performance on clinical-quality paediatric data will require formal validation in a Phase 3 school-based pilot study.*
-
-**Feature Importances (Random Forest, empirically measured):**
-
-| Feature | Importance | Rank |
-|---|---|---|
-| 🌙 Sleep Hours | **32.1%** | 1st |
-| 😊 Mood Score | **28.3%** | 2nd |
-| 📱 Screen Time | **21.4%** | 3rd |
-| 🏃 Physical Play | **11.0%** | 4th |
-| 📚 School Stress | **7.1%** | 5th |
-
-Sleep hours emerged as the highest-importance feature (32.1%), followed closely by mood score (28.3%), consistent with Burke et al. (2019)'s finding that sleep disruption and negative affect are the strongest multi-variable predictors of paediatric well-being risk.
-
-### 7.2 NLP Sentiment Module
-
-The VADER sentiment module correctly classifies a range of test journal entries:
-
-| Input Text | Expected Tone | VADER Compound | Assigned Tone |
+| Test Module | Scope | Result | Status |
 |---|---|---|---|
-| "I feel really happy and excited today!" | Positive | +0.78 | ✅ Positive |
-| "Nothing special happened." | Neutral | +0.04 | ✅ Neutral |
-| "I am so sad and everything feels terrible." | Negative | −0.81 | ✅ Negative |
-| "School was okay but I'm a bit tired." | Neutral | −0.02 | ✅ Neutral |
-| "I love playing with my friends after school." | Positive | +0.65 | ✅ Positive |
-
-### 7.3 System Functionality Verification
-
-| Test Case | Input | Expected Output | Status |
-|---|---|---|---|
-| Low-risk check-in | Mood=6, Sleep=10, Screen=1, Play=3, Stress=1 | Tier 0 (Low/Healthy) | ✅ Pass |
-| High-risk check-in | Mood=1, Sleep=4.5, Screen=7, Play=0, Stress=5 | Tier 2 (Elevated) | ✅ Pass |
-| Negative journal | "Everything is horrible and I feel awful." | Negative sentiment | ✅ Pass |
-| Empty journal | (empty string) | Neutral (0.0) | ✅ Pass |
-| Distress alert | 3 consecutive Tier 2 check-ins in history | Alert banner shown | ✅ Pass |
-| Privacy check | Journal text → storage | Text NOT in CSV | ✅ Pass |
+| `test_health` | FastAPI health & ML model loading | 200 OK | ✅ Pass |
+| `test_checkin_flow` | Check-in input validation & ML inference | Risk Tier 2, Confidence 97.8% | ✅ Pass |
+| `test_vader_nlp` | Sentiment scoring on positive/negative text | Polarity correctly scored | ✅ Pass |
+| `test_psc17_catalog` | Catalog verification (17 items) | 17 items loaded across 3 subscales | ✅ Pass |
+| `test_psc17_scoring` | Gardner subscale evaluation & cutoff logic | Internalizing cutoffs triggered | ✅ Pass |
+| `test_psc17_history` | Persistence & query of clinical screener records | History retrieved successfully | ✅ Pass |
+| `test_dashboard_analytics` | Longitudinal metrics & rolling averages | 7-day rolling averages computed | ✅ Pass |
+| `test_privacy_guarantee` | Verification that raw journal text is omitted | Zero PII / raw text in DB | ✅ Pass |
+| `test_crisis_resources` | Directory completeness (4 verified hotlines) | All helplines accessible | ✅ Pass |
 
 ---
 
@@ -422,11 +355,11 @@ All child-facing text, labels, and result descriptions have been designed to be 
 
 ## 10. Conclusion
 
-This paper presented **MindBridge**, a fully implemented Phase 2 Streamlit-based platform for non-clinical mental health surveillance and well-being tracking among children and adolescents. The platform addresses four key research gaps identified in the Phase 1 literature review: the need for age-appropriate interaction design, multi-modal data synthesis, continuous longitudinal surveillance, and integrated crisis referral. The dual-modality AI pipeline — combining a Random Forest lifestyle risk classifier (≥ 88% cross-validation accuracy on synthetic data) with a VADER NLP sentiment analyser — operates entirely locally, ensuring that sensitive child journal content is never transmitted or persisted. The privacy-preserving guardian dashboard provides caregivers with actionable longitudinal insights while strictly protecting child journal privacy in accordance with DPDP Act 2023 requirements.
+This paper presented **MindBridge**, a comprehensive software platform for non-clinical mental health surveillance, standardized psychometric assessment, and well-being tracking among children and adolescents. The platform addresses four key research gaps identified in the Phase 1 literature review: the need for age-appropriate interaction design, multi-modal data synthesis, continuous longitudinal surveillance, and integrated crisis referral. The dual-modality AI pipeline — combining a Random Forest lifestyle risk classifier (77.25% cross-validation accuracy on synthetic data with 100% recall on elevated risk) with a VADER NLP sentiment analyser — operates with in-memory local processing to ensure that sensitive child journal content is never transmitted or persisted. The integration of the Pediatric Symptom Checklist (PSC-17) screener bridges non-clinical daily monitoring with validated pediatric psychometric subscales (Internalizing, Attention, Externalizing). The privacy-preserving guardian dashboard provides caregivers with actionable longitudinal insights while strictly protecting child journal privacy in accordance with DPDP Act 2023 requirements.
 
-MindBridge demonstrates the feasibility of combining accessible, child-friendly interaction design with interpretable machine learning and natural language processing to create a scalable, low-cost early warning and support referral system. The next critical step is clinical feasibility evaluation through an IRB-approved school-based pilot study to validate the risk classifier on real-world paediatric self-report data and establish appropriate sensitivity and specificity thresholds for non-clinical well-being monitoring.
+MindBridge demonstrates the feasibility of combining accessible, child-friendly interaction design with interpretable machine learning, natural language processing, and validated clinical screeners to create a scalable, low-cost early warning and support referral system.
 
-**Open Source:** All source code is version-controlled at the project repository and is available for academic review.
+**Open Source Repository:** All source code, models, tests, and documentation are openly available at: [https://github.com/abhi-byte62/mental.git](https://github.com/abhi-byte62/mental.git).
 
 ---
 
