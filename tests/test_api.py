@@ -135,6 +135,47 @@ class MindBridgeBackendTests(unittest.TestCase):
         self.assertTrue(any("Childline" in n for n in names))
         self.assertTrue(any("Tele-MANAS" in n for n in names))
 
+    def test_assessment_questions(self):
+        resp = self.client.get("/api/assessment/questions")
+        self.assertEqual(resp.status_code, 200)
+        questions = resp.json()
+        self.assertEqual(len(questions), 17)
+        q1 = questions[0]
+        self.assertEqual(q1["id"], 1)
+        self.assertEqual(q1["category"], "internalizing")
+        self.assertIn("text", q1)
+
+    def test_assessment_submit_and_eval(self):
+        # Answers indicating elevated internalizing symptoms (Q1-Q5 = 2)
+        answers = {str(i): 2 if i <= 5 else 0 for i in range(1, 18)}
+        payload = {
+            "child_age": 12,
+            "answers": answers
+        }
+        resp = self.client.post("/api/assessment/submit", json=payload)
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+
+        self.assertEqual(data["total_score"], 10)
+        self.assertEqual(data["child_age"], 12)
+        self.assertTrue("subscales" in data)
+        self.assertEqual(data["subscales"]["internalizing"]["score"], 10)
+        self.assertTrue(data["subscales"]["internalizing"]["flagged"])
+        # Flagged internalizing pushes risk tier to 2
+        self.assertEqual(data["risk_tier"], 2)
+        self.assertGreater(len(data["recommendations"]), 0)
+
+    def test_assessment_history(self):
+        # Submit an assessment
+        answers = {str(i): 0 for i in range(1, 18)}
+        self.client.post("/api/assessment/submit", json={"child_age": 10, "answers": answers})
+
+        resp = self.client.get("/api/assessment/history")
+        self.assertEqual(resp.status_code, 200)
+        history = resp.json()
+        self.assertGreaterEqual(len(history), 1)
+        self.assertEqual(history[0]["child_age"], 10)
+
 
 if __name__ == "__main__":
     unittest.main()

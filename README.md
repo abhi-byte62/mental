@@ -43,33 +43,53 @@ B.Tech – Computer Science and Engineering
 
 ## Phase 2 — Full Application Implementation (Complete ✅)
 
-- **Child Interactive Portal:** Emoji mood picker + lifestyle sliders + optional reflective journal.
+- **Child Interactive Portal:** Emoji mood picker + lifestyle sliders + optional reflective journal (no PII retained).
+- **Standardized Pediatric Assessment (PSC-17):** Clinically validated 17-item Pediatric Symptom Checklist (Gardner et al., 1999) measuring internalizing, attention, and conduct subscales.
 - **ML Risk Classifier:** Random Forest (200 trees, StandardScaler, 5-fold CV) — 77.25% CV accuracy, 0.88 weighted F1, perfect recall on Elevated Risk tier.
-- **NLP Sentiment Engine:** VADER SentimentIntensityAnalyzer — local processing, no data transmission.
-- **Coping Toolkit:** Animated 4-7-8 breathing pacer (HTML/CSS/JS), 5-4-3-2-1 grounding exercise, affirmation cards.
-- **Guardian Dashboard:** Longitudinal trend charts, rolling averages, distress alerts — privacy-preserving (no journal text shown).
+- **NLP Sentiment Engine:** VADER SentimentIntensityAnalyzer — local processing, zero data transmission.
+- **Coping Toolkit:** Interactive 4-7-8 breathing pacer with dynamic animation, 5-4-3-2-1 sensory grounding exercise, positive affirmation deck.
+- **Guardian Dashboard:** Longitudinal trend charts, rolling averages, subscale risk breakdown, distress alerts — privacy-preserving (Section 9 DPDP Act compliant).
+- **Dual Interface Deployments:** Modern full-stack Web App (FastAPI + React 18 + Tailwind/Lucide/Recharts) and standalone Streamlit application.
 - **Crisis Referral:** Childline 1098, Tele-MANAS 14416, NIMHANS, iCall TISS.
-- **Research Paper Draft:** IEEE-format paper ready for submission.
+- **Automated Test Suite:** Comprehensive Python unittest suite covering endpoints, ML inference, and assessment evaluation.
 
 ---
 
 ## How to Run
 
+### Option A: Modern Full-Stack Web App (FastAPI + React)
+
+```bash
+# 1. Start the FastAPI backend
+uvicorn backend.main:app --reload --port 8000
+
+# 2. In a separate terminal, start the React frontend
+cd frontend
+npm install
+npm run dev
+```
+Open **http://localhost:5173** in your browser.
+
+---
+
+### Option B: Standalone Streamlit Application
+
 ```bash
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Generate synthetic training data (already done — data/synthetic_checkins.csv)
-python src/data/generate_dataset.py
-
-# 3. Train the ML classifier (already done — models/risk_classifier.pkl)
-python src/ml/train.py
-
-# 4. Launch the Streamlit application
+# 2. Launch the Streamlit application
 streamlit run app.py
 ```
+Open **http://localhost:8501** in your browser.
 
-Then open http://localhost:8501 in your browser.
+---
+
+## Running Test Suite
+
+```bash
+python -m unittest discover -s tests
+```
 
 ---
 
@@ -78,13 +98,30 @@ Then open http://localhost:8501 in your browser.
 ```
 /
 ├── README.md
-├── .gitignore
 ├── requirements.txt                               # Python dependencies
-├── app.py                                         # Main Streamlit entry point
+├── app.py                                         # Streamlit UI entry point
+│
+├── backend/
+│   ├── main.py                                    # FastAPI REST API endpoints
+│   ├── models.py                                  # SQLite / SQLAlchemy persistence models
+│   └── schemas.py                                 # Pydantic request/response schemas
+│
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Home.jsx                           # Overview & quick launch
+│   │   │   ├── CheckIn.jsx                        # Child daily mood & lifestyle check-in
+│   │   │   ├── ChildAssessment.jsx                # Validated PSC-17 pediatric screener
+│   │   │   ├── CopingToolkit.jsx                  # Breathing pacer & grounding tools
+│   │   │   ├── GuardianDashboard.jsx              # Caregiver analytics & assessment tracking
+│   │   │   └── CrisisResources.jsx                # Verified emergency referral directory
+│   │   ├── components/                            # Navbar, Footer, etc.
+│   │   └── api.js                                 # Centralized API client
 │
 ├── src/
 │   ├── data/
-│   │   ├── schema.py                              # Feature definitions, mood labels, risk tiers, constants
+│   │   ├── schema.py                              # Feature definitions, mood labels, risk tiers
+│   │   ├── assessment_psc17.py                    # PSC-17 items, scoring, & clinical cutoffs
 │   │   └── generate_dataset.py                   # Synthetic 2000-record training data generator
 │   ├── ml/
 │   │   ├── train.py                               # Random Forest training + 5-fold CV + serialization
@@ -94,6 +131,7 @@ Then open http://localhost:8501 in your browser.
 │   │   └── sentiment.py                           # VADER sentiment wrapper
 │   ├── ui/
 │   │   ├── checkin.py                             # Child check-in page
+│   │   ├── assessment.py                          # Streamlit PSC-17 assessment page
 │   │   ├── coping.py                              # Coping toolkit (breathing + grounding + affirmations)
 │   │   ├── dashboard.py                           # Guardian longitudinal dashboard
 │   │   └── crisis.py                              # Crisis referral resources page
@@ -102,10 +140,13 @@ Then open http://localhost:8501 in your browser.
 │       └── session.py                             # Streamlit session state management
 │
 ├── models/
-│   └── risk_classifier.pkl                       # Serialised sklearn Pipeline (trained)
+│   └── risk_classifier.pkl                       # Serialized sklearn Pipeline (trained)
 │
 ├── data/
 │   └── synthetic_checkins.csv                    # Synthetic training dataset (2000 records)
+│
+├── tests/
+│   └── test_api.py                                # Comprehensive backend test suite
 │
 ├── docs/
 │   └── Review_1_Mini_Project_Presentation.pptx  # Phase 1 review presentation
@@ -124,13 +165,14 @@ Then open http://localhost:8501 in your browser.
 
 | Component | Technology |
 |---|---|
-| Web Framework | Streamlit ≥ 1.35 |
+| Frontend Web App | React 18, Vite, Lucide React, Recharts, Vanilla CSS Design System |
+| Backend REST API | FastAPI, Uvicorn, SQLite, SQLAlchemy, Pydantic |
+| Streamlit App | Streamlit ≥ 1.35 |
 | ML Library | scikit-learn ≥ 1.4 (Random Forest + StandardScaler) |
 | NLP Library | vaderSentiment ≥ 3.3.2 (VADER) |
 | Data Processing | pandas ≥ 2.1, NumPy ≥ 1.26 |
-| Visualisation | Plotly ≥ 5.20 |
-| Model Serialisation | joblib ≥ 1.3 |
-| Language | Python 3.11 |
+| Model Serialization | joblib ≥ 1.3 |
+| Language | Python 3.11+ / JavaScript ES2022 |
 
 ## Disclaimer
 

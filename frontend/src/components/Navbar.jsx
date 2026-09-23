@@ -7,13 +7,15 @@ import {
   Home, 
   Wind,
   ShieldAlert,
-  Database
+  Database,
+  ClipboardCheck
 } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, onQuickSeed, backendOnline }) {
   const navItems = [
     { id: 'home', label: 'Overview', icon: Home },
     { id: 'checkin', label: 'Daily Check-in', icon: Heart },
+    { id: 'assessment', label: 'Child Assessment (PSC-17)', icon: ClipboardCheck },
     { id: 'coping', label: 'Coping Toolkit', icon: Wind },
     { id: 'dashboard', label: 'Guardian Analytics', icon: BarChart3 },
     { id: 'crisis', label: 'Crisis Support', icon: PhoneCall },

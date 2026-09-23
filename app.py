@@ -35,7 +35,7 @@ if _ROOT not in sys.path:
 import streamlit as st
 
 from src.utils.session import init_session_state
-from src.ui            import checkin, coping, dashboard, crisis
+from src.ui            import checkin, coping, dashboard, crisis, assessment
 
 # ---------------------------------------------------------------------------
 # Navigation Options
@@ -43,6 +43,7 @@ from src.ui            import checkin, coping, dashboard, crisis
 _PAGES = {
     "🏠 Home":              "home",
     "😊 Daily Check-in":   "checkin",
+    "📋 Child Assessment": "assessment",
     "🌬️ Coping Tools":    "coping",
     "📊 Guardian Dashboard": "dashboard",
     "🆘 Crisis Resources": "crisis",
@@ -295,6 +296,8 @@ def main() -> None:
         _render_home()
     elif page_key == "checkin":
         checkin.render()
+    elif page_key == "assessment":
+        assessment.render()
     elif page_key == "coping":
         coping.render()
     elif page_key == "dashboard":

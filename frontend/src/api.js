@@ -87,3 +87,28 @@ export async function getDiagnostics() {
 export function getExportCsvUrl() {
   return `${API_BASE}/export-csv`;
 }
+
+export async function getAssessmentQuestions() {
+  const res = await fetch(`${API_BASE}/assessment/questions`);
+  if (!res.ok) throw new Error("Failed to load assessment questionnaire");
+  return res.json();
+}
+
+export async function submitAssessment(data) {
+  const res = await fetch(`${API_BASE}/assessment/submit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || "Failed to submit assessment");
+  }
+  return res.json();
+}
+
+export async function getAssessmentHistory() {
+  const res = await fetch(`${API_BASE}/assessment/history`);
+  if (!res.ok) throw new Error("Failed to load assessment history");
+  return res.json();
+}

@@ -8,7 +8,9 @@ import {
   ShieldCheck, 
   TrendingUp, 
   PhoneCall,
-  Info
+  Info,
+  ClipboardCheck,
+  ChevronRight
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -25,7 +27,7 @@ import {
   ResponsiveContainer, 
   ReferenceLine 
 } from 'recharts';
-import { getDashboard, seedDemo, resetDemo, getExportCsvUrl } from '../api';
+import { getDashboard, seedDemo, resetDemo, getExportCsvUrl, getAssessmentHistory } from '../api';
 
 const TIER_COLORS = {
   "Low Risk / Healthy": "#059669",
@@ -35,6 +37,7 @@ const TIER_COLORS = {
 
 export default function GuardianDashboard({ setActiveTab, onDemoSeeded }) {
   const [metrics, setMetrics] = useState(null);
+  const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterDays, setFilterDays] = useState(null);
   const [actionMessage, setActionMessage] = useState(null);
@@ -42,8 +45,12 @@ export default function GuardianDashboard({ setActiveTab, onDemoSeeded }) {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const data = await getDashboard(filterDays);
-      setMetrics(data);
+      const [dashData, assessData] = await Promise.all([
+        getDashboard(filterDays),
+        getAssessmentHistory().catch(() => [])
+      ]);
+      setMetrics(dashData);
+      setAssessments(assessData || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -455,6 +462,105 @@ export default function GuardianDashboard({ setActiveTab, onDemoSeeded }) {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Standardized Pediatric Clinical Assessment History (PSC-17) */}
+          <div className="card-surface p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <ClipboardCheck className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Standardized Clinical Screeners</span>
+                </div>
+                <h3 className="font-bold text-sm text-slate-900 mt-0.5">
+                  Pediatric Symptom Checklist (PSC-17) Reports
+                </h3>
+              </div>
+              <button
+                onClick={() => setActiveTab && setActiveTab('assessment')}
+                className="self-start sm:self-auto px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              >
+                <span>Take PSC-17 Assessment</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {assessments.length === 0 ? (
+              <div className="py-8 text-center text-xs text-slate-500 bg-slate-50 rounded-lg border border-slate-200">
+                <ClipboardCheck className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                <p className="font-semibold text-slate-700">No Standardized Clinical Assessments Recorded Yet</p>
+                <p className="mt-1 text-slate-500 max-w-sm mx-auto">
+                  Take the standardized 17-item pediatric screener to generate clinical subscale analyses for emotional, attention, and conduct health.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs text-slate-700">
+                  <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                      <th className="p-2.5">Date &amp; Time</th>
+                      <th className="p-2.5">Child Age</th>
+                      <th className="p-2.5">Total Score</th>
+                      <th className="p-2.5">Internalizing</th>
+                      <th className="p-2.5">Attention</th>
+                      <th className="p-2.5">Externalizing</th>
+                      <th className="p-2.5">Clinical Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {assessments.slice(-5).reverse().map((a) => (
+                      <tr key={a.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="p-2.5 font-mono text-slate-500 text-[11px]">
+                          {new Date(a.timestamp).toLocaleDateString()} {new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                        <td className="p-2.5 font-medium">{a.child_age} yrs</td>
+                        <td className="p-2.5 font-bold text-slate-900">
+                          {a.total_score} <span className="text-slate-400 font-normal">/ {a.max_total_score}</span>
+                        </td>
+                        <td className="p-2.5">
+                          <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                            a.subscales?.internalizing?.flagged 
+                              ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+                              : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {a.subscales?.internalizing?.score ?? '-'}/10 {a.subscales?.internalizing?.flagged && '⚠'}
+                          </span>
+                        </td>
+                        <td className="p-2.5">
+                          <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                            a.subscales?.attention?.flagged 
+                              ? 'bg-amber-50 text-amber-700 border border-amber-200' 
+                              : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {a.subscales?.attention?.score ?? '-'}/10 {a.subscales?.attention?.flagged && '⚠'}
+                          </span>
+                        </td>
+                        <td className="p-2.5">
+                          <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                            a.subscales?.externalizing?.flagged 
+                              ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+                              : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {a.subscales?.externalizing?.score ?? '-'}/14 {a.subscales?.externalizing?.flagged && '⚠'}
+                          </span>
+                        </td>
+                        <td className="p-2.5">
+                          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                            a.risk_tier === 0
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : a.risk_tier === 1
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-rose-100 text-rose-800'
+                          }`}>
+                            {a.risk_label}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
         </div>

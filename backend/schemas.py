@@ -95,3 +95,44 @@ class DiagnosticsResponse(BaseModel):
     feature_importances: Dict[str, float]
     confusion_matrix: List[List[int]]
     dataset_records: int
+
+
+# ---------------------------------------------------------------------------
+# Standardized Child Assessment (PSC-17) Schemas
+# ---------------------------------------------------------------------------
+
+class AssessmentQuestionItem(BaseModel):
+    id: int
+    text: str
+    category: str  # "internalizing" | "attention" | "externalizing" | "social"
+    category_title: str
+    help_text: Optional[str] = None
+
+
+class AssessmentSubmitRequest(BaseModel):
+    child_age: Optional[int] = Field(11, ge=4, le=18, description="Child age in years")
+    answers: Dict[str, int] = Field(..., description="Map of question_id (string) to score (0=Never, 1=Sometimes, 2=Often)")
+
+
+class SubscaleResult(BaseModel):
+    name: str
+    score: int
+    max_score: int
+    cutoff: int
+    flagged: bool
+    interpretation: str
+
+
+class AssessmentResponse(BaseModel):
+    id: int
+    timestamp: datetime
+    child_age: Optional[int]
+    total_score: int
+    max_total_score: int
+    clinical_cutoff_met: bool
+    risk_tier: int
+    risk_label: str
+    risk_color: str
+    summary: str
+    subscales: Dict[str, SubscaleResult]
+    recommendations: List[str]

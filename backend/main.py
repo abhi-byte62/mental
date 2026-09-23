@@ -5,6 +5,7 @@ Provides RESTful APIs for the React/Vite Frontend.
 
 import os
 import sys
+import json
 import random
 from io import StringIO
 from datetime import datetime, timedelta
@@ -20,7 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from backend.database import engine, get_db, Base
-from backend.models import CheckIn
+from backend.models import CheckIn, Assessment
 from backend.schemas import (
     CheckInCreate,
     CheckInRead,
@@ -30,6 +31,10 @@ from backend.schemas import (
     SentimentSandboxRequest,
     SentimentSandboxResponse,
     DiagnosticsResponse,
+    AssessmentQuestionItem,
+    AssessmentSubmitRequest,
+    AssessmentResponse,
+    SubscaleResult,
 )
 
 from src.data.schema import (
@@ -38,6 +43,7 @@ from src.data.schema import (
     AFFIRMATIONS,
     CRISIS_RESOURCES,
 )
+from src.data.assessment_psc17 import PSC17_QUESTIONS, evaluate_psc17
 from src.ml.predict import predict
 from src.ml.explainer import explain_prediction, get_feature_importances
 from src.nlp.sentiment import analyze_sentiment
@@ -380,3 +386,81 @@ def export_csv(db: Session = Depends(get_db)):
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=mindbridge_history.csv"},
     )
+
+
+# ---------------------------------------------------------------------------
+# Standardized Child Assessment (PSC-17) Endpoints
+# ---------------------------------------------------------------------------
+
+@app.get("/api/assessment/questions", response_model=List[AssessmentQuestionItem])
+def get_assessment_questions():
+    """Return the validated 17-item Pediatric Symptom Checklist (PSC-17) questions."""
+    return PSC17_QUESTIONS
+
+
+@app.post("/api/assessment/submit", response_model=AssessmentResponse)
+def submit_assessment(payload: AssessmentSubmitRequest, db: Session = Depends(get_db)):
+    """
+    Evaluate child psychosocial assessment:
+    1. Score the 17 responses across Internalizing, Attention, Externalizing, and Social subscales.
+    2. Determine clinical screening cutoff (Total >= 15 indicates psychosocial risk).
+    3. Persist assessment record to database.
+    4. Return structured psychometric report with recommendations.
+    """
+    eval_result = evaluate_psc17(payload.answers)
+
+    # Save to database
+    db_assessment = Assessment(
+        timestamp=datetime.utcnow(),
+        child_age=payload.child_age or 11,
+        internalizing_score=eval_result["subscales"]["internalizing"]["score"],
+        attention_score=eval_result["subscales"]["attention"]["score"],
+        externalizing_score=eval_result["subscales"]["externalizing"]["score"],
+        social_score=eval_result["subscales"]["social"]["score"],
+        total_score=eval_result["total_score"],
+        clinical_cutoff_met=eval_result["clinical_cutoff_met"],
+        risk_tier=eval_result["risk_tier"],
+        risk_label=eval_result["risk_label"],
+        answers_json=json.dumps(payload.answers),
+    )
+    db.add(db_assessment)
+    db.commit()
+    db.refresh(db_assessment)
+
+    return AssessmentResponse(
+        id=db_assessment.id,
+        timestamp=db_assessment.timestamp,
+        child_age=db_assessment.child_age,
+        total_score=eval_result["total_score"],
+        max_total_score=eval_result["max_total_score"],
+        clinical_cutoff_met=eval_result["clinical_cutoff_met"],
+        risk_tier=eval_result["risk_tier"],
+        risk_label=eval_result["risk_label"],
+        risk_color=eval_result["risk_color"],
+        summary=eval_result["summary"],
+        subscales={k: SubscaleResult(**v) for k, v in eval_result["subscales"].items()},
+        recommendations=eval_result["recommendations"],
+    )
+
+
+@app.get("/api/assessment/history")
+def get_assessment_history(db: Session = Depends(get_db)):
+    """Retrieve historical assessment results."""
+    records = db.query(Assessment).order_by(Assessment.timestamp.desc()).limit(20).all()
+    return [
+        {
+            "id": r.id,
+            "timestamp": r.timestamp.isoformat(),
+            "child_age": r.child_age,
+            "total_score": r.total_score,
+            "clinical_cutoff_met": r.clinical_cutoff_met,
+            "risk_tier": r.risk_tier,
+            "risk_label": r.risk_label,
+            "internalizing_score": r.internalizing_score,
+            "attention_score": r.attention_score,
+            "externalizing_score": r.externalizing_score,
+            "social_score": r.social_score,
+        }
+        for r in records
+    ]
+

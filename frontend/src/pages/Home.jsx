@@ -12,11 +12,19 @@ import {
   Lock,
   Layers,
   CheckCircle2,
-  FileCheck
+  FileCheck,
+  ClipboardCheck
 } from 'lucide-react';
 
 export default function Home({ setActiveTab, onQuickSeed }) {
   const features = [
+    {
+      icon: ClipboardCheck,
+      title: "Standardized Child Assessment (PSC-17)",
+      desc: "Validated 17-item pediatric psychosocial screener (Gardner et al., 1999) measuring internalizing, attention, and conduct subscales.",
+      tab: "assessment",
+      cta: "Take Assessment"
+    },
     {
       icon: Heart,
       title: "Child-Centered Mood Check-in",
@@ -87,11 +95,19 @@ export default function Home({ setActiveTab, onQuickSeed }) {
           {/* Quick CTA Actions */}
           <div className="pt-2 flex flex-wrap items-center gap-3">
             <button
-              onClick={() => setActiveTab('checkin')}
+              onClick={() => setActiveTab('assessment')}
               className="px-5 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs shadow-xs transition-colors flex items-center gap-2"
             >
+              <ClipboardCheck className="w-3.5 h-3.5" />
+              <span>Child Assessment (PSC-17)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('checkin')}
+              className="px-5 py-2.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs border border-slate-300 transition-colors flex items-center gap-2"
+            >
               <span>Daily Check-in</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
             </button>
 
             <button
