@@ -85,7 +85,11 @@ The critical review of existing literature and available tools identifies four p
 
 ### 4.1 Five-Tier Architecture Design
 
-MindBridge is organized into five decoupled, cohesive architectural tiers supporting both a modern production web application and a standalone interactive deployment:
+MindBridge is organized into five decoupled, cohesive architectural tiers supporting both a modern production web application and a standalone interactive deployment, as illustrated in Fig. 1:
+
+![Figure 1: Five-Tier System Architecture of MindBridge](../diagrams/system_architecture.png)
+
+*Fig. 1. Five-Tier System Architecture of MindBridge illustrating Presentation, Application Logic & API, AI Intelligence & Psychometrics, Data Persistence, and External Crisis Referral tiers.*
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -128,7 +132,11 @@ MindBridge is organized into five decoupled, cohesive architectural tiers suppor
 
 ### 4.2 Data Flow
 
-The end-to-end data flow proceeds as follows:
+The end-to-end data flow proceeds through the pipeline depicted in Fig. 2:
+
+![Figure 2: Level 0 and Level 1 Data Flow Diagram](../diagrams/data_flow_diagram.png)
+
+*Fig. 2. End-to-End Data Flow Diagram (DFD) depicting child check-in processing, feature extraction, dual-modality ML/NLP inference, psychometric evaluation, and privacy-preserving guardian surveillance dashboards.*
 
 1. **Child Input:** Emoji tap (mood score 1–6) + lifestyle sliders (sleep, screen, play, stress) or PSC-17 screener responses $\rightarrow$ Application API Layer (`/api/checkin` or `/api/assessment/submit`).
 2. **Feature Assembly:** Validated feature vector `[mood_score, sleep_hours, screen_time, physical_play, school_stress]`.
@@ -342,14 +350,20 @@ All child-facing text, labels, and result descriptions have been designed to be 
 
 4. **Language Coverage:** The current implementation supports English only. Regional Indian language support (Kannada, Hindi, Tamil) would significantly improve accessibility for the target population.
 
-### 9.2 Future Work
+### 9.2 Future Work and Implementation Roadmap
+
+The development trajectory of MindBridge follows a multi-phase implementation roadmap structured across distinct academic and clinical deliverables, as illustrated in the Gantt chart in Fig. 3:
+
+![Figure 3: Project Implementation Timeline and Gantt Chart](../diagrams/mental_health_project_gantt_chart.png)
+
+*Fig. 3. Project Phase 1 and Phase 2 Implementation Timeline, Work Packages, Milestone Reviews, and Clinical Integration Roadmap.*
 
 - **Phase 3: Clinical Data Acquisition & Validation** — Obtain IRB/ethics approval for a school-based longitudinal pilot study (n ≥ 200 children) to collect validated real-world training data and establish clinical utility benchmarks.
 - **Passive Sensing Integration** — Integrate accelerometer and ambient data via mobile sensors to supplement self-report features.
 - **Temporal Modelling** — Implement LSTM or Transformer-based sequence classifier operating on 7-day check-in windows.
 - **Multi-Language UI** — Add Kannada and Hindi interface localisation for Bengaluru-area schools.
 - **Caregiver Communication Module** — Secure, privacy-preserving summary report generation for school counselors.
-- **Streamlit Cloud Deployment** — Package for cloud deployment with user authentication, session isolation, and encrypted database backend.
+- **Cloud Deployment & Scalability** — Deploy containerized production builds with user authentication, session isolation, and encrypted cloud database backend.
 
 ---
 
