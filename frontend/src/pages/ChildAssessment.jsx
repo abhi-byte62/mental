@@ -19,7 +19,7 @@ import {
   Wind,
   PhoneCall
 } from 'lucide-react';
-import { getAssessmentQuestions, submitAssessment, getAssessmentHistory } from '../api';
+import { getAssessmentQuestions, submitAssessment, getAssessmentHistory, DEFAULT_PSC17_QUESTIONS } from '../api';
 
 const CATEGORY_TABS = [
   { id: 'all', label: 'All Items (17)' },
@@ -30,8 +30,8 @@ const CATEGORY_TABS = [
 ];
 
 export default function ChildAssessment({ setActiveTab }) {
-  const [questions, setQuestions] = useState([]);
-  const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const [questions, setQuestions] = useState(DEFAULT_PSC17_QUESTIONS || []);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [answers, setAnswers] = useState({});
   const [childAge, setChildAge] = useState(11);
   const [selectedCategory, setSelectedCategory] = useState('all');
