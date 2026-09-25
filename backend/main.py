@@ -21,8 +21,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from backend.database import engine, get_db, Base
-from backend.models import CheckIn, Assessment
+from backend.models import User, CheckIn, Assessment
 from backend.schemas import (
+    UserCreate,
+    UserLogin,
+    UserRead,
+    DemoLoginRequest,
+    AuthResponse,
+    DemoAccountInfo,
     CheckInCreate,
     CheckInRead,
     CheckInAssessmentResponse,
@@ -36,6 +42,13 @@ from backend.schemas import (
     AssessmentResponse,
     SubscaleResult,
 )
+from backend.auth import (
+    hash_password,
+    verify_password,
+    generate_token,
+    seed_demo_users,
+    DEMO_ACCOUNTS,
+)
 
 from src.data.schema import (
     MOOD_SCORE_TO_LABEL,
@@ -48,13 +61,15 @@ from src.ml.predict import predict
 from src.ml.explainer import explain_prediction, get_feature_importances
 from src.nlp.sentiment import analyze_sentiment
 
-# Initialize database schema
+# Initialize database schema and demo accounts
 Base.metadata.create_all(bind=engine)
+with Session(engine) as init_db:
+    seed_demo_users(init_db)
 
 app = FastAPI(
     title="MindBridge API",
     description="Intelligent Mental Health & Well-being Surveillance API for Children",
-    version="2.0.0",
+    version="2.1.0",
 )
 
 # Configure CORS for local development (Vite frontend on localhost:5173 / localhost:3000)
@@ -79,6 +94,90 @@ def health_check():
         "model_loaded": model_loaded,
         "database": "connected",
     }
+
+
+# ---------------------------------------------------------------------------
+# Authentication & Demo Account Endpoints
+# ---------------------------------------------------------------------------
+
+@app.get("/api/auth/demo-users", response_model=List[DemoAccountInfo])
+def get_demo_users():
+    """Return available pre-configured demo personas."""
+    return DEMO_ACCOUNTS
+
+
+@app.post("/api/auth/register", response_model=AuthResponse)
+def register_user(payload: UserCreate, db: Session = Depends(get_db)):
+    """Register a new Child, Guardian, or Clinician account."""
+    existing = db.query(User).filter(User.username == payload.username.strip().lower()).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Username already exists. Please choose another username.")
+
+    user = User(
+        username=payload.username.strip().lower(),
+        name=payload.name.strip(),
+        email=payload.email.strip() if payload.email else None,
+        role=payload.role.strip().lower(),
+        child_age=payload.child_age,
+        grade=payload.grade,
+        avatar=payload.avatar or ("🧒" if payload.role == "child" else "👨‍👩‍👧" if payload.role == "guardian" else "🩺"),
+        password_hash=hash_password(payload.password),
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    token = generate_token(user.id, user.username, user.role)
+    return {
+        "token": token,
+        "user": user,
+        "message": f"Welcome to MindBridge, {user.name}!"
+    }
+
+
+@app.post("/api/auth/login", response_model=AuthResponse)
+def login_user(payload: UserLogin, db: Session = Depends(get_db)):
+    """Authenticate existing user credentials."""
+    user = db.query(User).filter(User.username == payload.username.strip().lower()).first()
+    if not user or not verify_password(payload.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid username or password.")
+
+    token = generate_token(user.id, user.username, user.role)
+    return {
+        "token": token,
+        "user": user,
+        "message": f"Welcome back, {user.name}!"
+    }
+
+
+@app.post("/api/auth/demo-login", response_model=AuthResponse)
+def demo_login(payload: DemoLoginRequest, db: Session = Depends(get_db)):
+    """1-Click instant login into demo persona."""
+    seed_demo_users(db)
+    user = db.query(User).filter(User.username == payload.username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Demo user account not found.")
+
+    token = generate_token(user.id, user.username, user.role)
+    return {
+        "token": token,
+        "user": user,
+        "message": f"Logged in as demo persona: {user.name}"
+    }
+
+
+@app.get("/api/auth/me", response_model=UserRead)
+def get_current_user_profile(user_id: Optional[int] = Query(None), db: Session = Depends(get_db)):
+    """Retrieve profile of currently active user."""
+    if not user_id:
+        # Default to first demo child
+        user = db.query(User).filter(User.username == "child_demo").first()
+    else:
+        user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    return user
 
 
 @app.post("/api/checkin", response_model=CheckInAssessmentResponse)
@@ -106,6 +205,7 @@ def submit_checkin(payload: CheckInCreate, db: Session = Depends(get_db)):
 
     # Save to Database (Privacy-by-Design: NO journal text stored)
     db_checkin = CheckIn(
+        user_id=payload.user_id,
         timestamp=datetime.utcnow(),
         mood_label=mood_label,
         mood_score=payload.mood_score,
@@ -411,6 +511,7 @@ def submit_assessment(payload: AssessmentSubmitRequest, db: Session = Depends(ge
 
     # Save to database
     db_assessment = Assessment(
+        user_id=payload.user_id,
         timestamp=datetime.utcnow(),
         child_age=payload.child_age or 11,
         internalizing_score=eval_result["subscales"]["internalizing"]["score"],

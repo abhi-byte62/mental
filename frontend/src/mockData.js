@@ -3,6 +3,42 @@
  * Enables zero-dependency standalone operation on static hosting platforms like Vercel.
  */
 
+export const DEMO_USERS_LIST = [
+  {
+    username: "child_demo",
+    name: "Ashrith",
+    email: "ashrith.demo@mindbridge.org",
+    role: "child",
+    child_age: 11,
+    grade: "Grade 6",
+    avatar: "🧒",
+    badge: "Child Profile",
+    description: "Child self-reporting check-in, mood journals & interactive coping exercises."
+  },
+  {
+    username: "guardian_demo",
+    name: "Nitiz (Parent)",
+    email: "nitiz.guardian@mindbridge.org",
+    role: "guardian",
+    child_age: 11,
+    grade: "Parent / Primary Caregiver",
+    avatar: "👨‍👩‍👧",
+    badge: "Guardian Dashboard",
+    description: "Caregiver overview of longitudinal lifestyle trends, risk tier flags & Section 9 DPDP data consent."
+  },
+  {
+    username: "teacher_demo",
+    name: "Dr. Arjun Cement",
+    email: "arjun.cement@mindbridge.org",
+    role: "clinician",
+    child_age: null,
+    grade: "School Counselor / Clinical Psychologist",
+    avatar: "🩺",
+    badge: "Clinical & School Surveillance",
+    description: "Multi-child surveillance, standardized PSC-17 evaluation review & verified crisis escalations."
+  }
+];
+
 export const INITIAL_DEMO_CHECKINS = [
   { id: 1, timestamp: new Date(Date.now() - 13 * 86400000).toISOString(), mood_score: 5, mood_label: "😄 Joyful", sleep_hours: 8.5, screen_time: 2.0, physical_play: 2.5, school_stress: 1, sentiment_compound: 0.65, sentiment_tone: "Positive", risk_tier: 0, risk_label: "Low Risk / Healthy" },
   { id: 2, timestamp: new Date(Date.now() - 12 * 86400000).toISOString(), mood_score: 5, mood_label: "😄 Joyful", sleep_hours: 8.0, screen_time: 2.5, physical_play: 2.0, school_stress: 2, sentiment_compound: 0.45, sentiment_tone: "Positive", risk_tier: 0, risk_label: "Low Risk / Healthy" },

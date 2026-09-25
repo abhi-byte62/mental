@@ -7,7 +7,61 @@ from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 
 
+class UserCreate(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    name: str = Field(..., min_length=2, max_length=100)
+    password: str = Field(..., min_length=4)
+    role: str = Field("child", description="'child', 'guardian', or 'clinician'")
+    email: Optional[str] = None
+    child_age: Optional[int] = 11
+    grade: Optional[str] = None
+    avatar: Optional[str] = "🧒"
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+
+class UserRead(BaseModel):
+    id: int
+    username: str
+    name: str
+    email: Optional[str]
+    role: str
+    child_age: Optional[int]
+    grade: Optional[str]
+    avatar: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class DemoLoginRequest(BaseModel):
+    username: str = Field(..., description="'child_demo', 'guardian_demo', or 'teacher_demo'")
+
+
+class AuthResponse(BaseModel):
+    token: str
+    user: UserRead
+    message: str
+
+
+class DemoAccountInfo(BaseModel):
+    username: str
+    name: str
+    email: str
+    role: str
+    child_age: Optional[int]
+    grade: Optional[str]
+    avatar: str
+    badge: str
+    description: str
+
+
 class CheckInCreate(BaseModel):
+    user_id: Optional[int] = None
     mood_score: int = Field(..., ge=1, le=6, description="Mood score from 1 (Frustrated) to 6 (Joyful)")
     mood_label: Optional[str] = Field(None, description="Optional label, e.g., '😄 Joyful'")
     sleep_hours: float = Field(..., ge=0.0, le=24.0, description="Hours of sleep last night")
@@ -15,6 +69,7 @@ class CheckInCreate(BaseModel):
     physical_play: float = Field(..., ge=0.0, le=24.0, description="Hours of physical play/exercise")
     school_stress: int = Field(..., ge=1, le=5, description="School stress level 1-5")
     journal_text: Optional[str] = Field("", description="Optional reflective journal entry (analyzed in-memory, never persisted)")
+
 
 
 class CheckInRead(BaseModel):
@@ -110,6 +165,7 @@ class AssessmentQuestionItem(BaseModel):
 
 
 class AssessmentSubmitRequest(BaseModel):
+    user_id: Optional[int] = None
     child_age: Optional[int] = Field(11, ge=4, le=18, description="Child age in years")
     answers: Dict[str, int] = Field(..., description="Map of question_id (string) to score (0=Never, 1=Sometimes, 2=Often)")
 

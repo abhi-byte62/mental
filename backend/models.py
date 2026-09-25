@@ -3,14 +3,30 @@ SQLAlchemy ORM models for MindBridge.
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean, Text
+from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean, Text, ForeignKey
 from backend.database import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    username = Column(String(50), unique=True, index=True, nullable=False)
+    name = Column(String(100), nullable=False)
+    email = Column(String(120), nullable=True)
+    role = Column(String(20), nullable=False, default="child")  # "child" | "guardian" | "clinician"
+    child_age = Column(Integer, nullable=True, default=11)
+    grade = Column(String(20), nullable=True)
+    avatar = Column(String(20), nullable=False, default="🧒")
+    password_hash = Column(String(255), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class CheckIn(Base):
     __tablename__ = "checkins"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
     timestamp = Column(DateTime, default=datetime.utcnow, index=True)
 
     # Mood parameters
@@ -36,6 +52,7 @@ class Assessment(Base):
     __tablename__ = "assessments"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
     timestamp = Column(DateTime, default=datetime.utcnow, index=True)
 
     child_age = Column(Integer, nullable=True, default=11)
@@ -54,3 +71,4 @@ class Assessment(Base):
 
     # Serialized answers for longitudinal audit
     answers_json = Column(Text, nullable=True)
+

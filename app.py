@@ -97,6 +97,21 @@ def _render_sidebar() -> str:
             label_visibility="collapsed",
         )
 
+        # User Profile / Persona Switcher
+        st.markdown("**Active Persona / Role:**")
+        user_personas = {
+            "🧒 Ashrith (Child, Age 11)": {"role": "child", "name": "Ashrith", "grade": "Grade 6"},
+            "👨‍👩‍👧 Nitiz (Guardian / Parent)": {"role": "guardian", "name": "Nitiz", "grade": "Parent"},
+            "🩺 Dr. Arjun Cement (School Counselor)": {"role": "clinician", "name": "Dr. Arjun Cement", "grade": "Counselor"},
+        }
+        selected_persona = st.selectbox(
+            "Switch User",
+            options=list(user_personas.keys()),
+            label_visibility="collapsed",
+        )
+        current_info = user_personas[selected_persona]
+        st.caption(f"Role: **{current_info['role'].capitalize()}** | {current_info['grade']}")
+
         st.divider()
 
         # Last check-in status indicator
@@ -239,9 +254,9 @@ def _render_home() -> None:
 
     st.markdown("---")
 
-    with st.expander("ℹ️ Technical Architecture (Phase 2 Implementation)"):
+    with st.expander("ℹ️ Technical Architecture & Full System Implementation"):
         st.markdown("""
-        **MindBridge** implements the 5-tier architecture designed in Phase 1:
+        **MindBridge** implements the full 5-tier architecture:
 
         | Tier | Component | Technology |
         |---|---|---|

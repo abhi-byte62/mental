@@ -10,8 +10,11 @@
 import { 
   INITIAL_DEMO_CHECKINS, 
   INITIAL_DEMO_ASSESSMENTS, 
-  CRISIS_RESOURCES_DATA 
+  CRISIS_RESOURCES_DATA,
+  DEMO_USERS_LIST 
 } from './mockData';
+
+export { DEMO_USERS_LIST };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL 
   ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}/api`
@@ -441,3 +444,139 @@ export async function getAssessmentHistory() {
   } catch {}
   return getLocalAssessments();
 }
+
+// ---------------------------------------------------------------------------
+// Authentication & User Session API
+// ---------------------------------------------------------------------------
+
+export async function getDemoUsers() {
+  try {
+    const res = await fetch(`${API_BASE}/auth/demo-users`);
+    if (res.ok) return await res.json();
+  } catch {}
+  return DEMO_USERS_LIST;
+}
+
+export async function loginUser(credentials) {
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(credentials),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Authentication failed. Invalid username or password.");
+    }
+    const data = await res.json();
+    localStorage.setItem("mindbridge_auth_user", JSON.stringify(data.user));
+    localStorage.setItem("mindbridge_auth_token", data.token);
+    return data;
+  } catch (e) {
+    if (e.message && !e.message.includes("fetch")) throw e;
+    // Offline / Standalone Fallback
+    const demo = DEMO_USERS_LIST.find(u => u.username.toLowerCase() === credentials.username.toLowerCase());
+    if (demo) {
+      const authObj = {
+        token: `offline-token-${Date.now()}`,
+        user: { ...demo, id: Date.now(), created_at: new Date().toISOString() },
+        message: `Welcome back, ${demo.name}!`
+      };
+      localStorage.setItem("mindbridge_auth_user", JSON.stringify(authObj.user));
+      return authObj;
+    }
+    throw new Error("Invalid username or password.");
+  }
+}
+
+export async function registerUser(userData) {
+  try {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Registration failed. Username may already be in use.");
+    }
+    const data = await res.json();
+    localStorage.setItem("mindbridge_auth_user", JSON.stringify(data.user));
+    localStorage.setItem("mindbridge_auth_token", data.token);
+    return data;
+  } catch (e) {
+    if (e.message && !e.message.includes("fetch")) throw e;
+    // Offline registration
+    const newUser = {
+      id: Date.now(),
+      username: userData.username.toLowerCase(),
+      name: userData.name,
+      email: userData.email || null,
+      role: userData.role || "child",
+      child_age: userData.child_age || 11,
+      grade: userData.grade || null,
+      avatar: userData.avatar || (userData.role === "child" ? "🧒" : userData.role === "guardian" ? "👨‍👩‍👧" : "🩺"),
+      created_at: new Date().toISOString()
+    };
+    const authObj = {
+      token: `offline-token-${Date.now()}`,
+      user: newUser,
+      message: `Welcome to MindBridge, ${newUser.name}!`
+    };
+    localStorage.setItem("mindbridge_auth_user", JSON.stringify(newUser));
+    return authObj;
+  }
+}
+
+export async function demoLoginUser(username) {
+  try {
+    const res = await fetch(`${API_BASE}/auth/demo-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem("mindbridge_auth_user", JSON.stringify(data.user));
+      localStorage.setItem("mindbridge_auth_token", data.token);
+      return data;
+    }
+  } catch {}
+
+  // Fallback demo user
+  const found = DEMO_USERS_LIST.find(u => u.username === username) || DEMO_USERS_LIST[0];
+  const user = {
+    id: 101,
+    username: found.username,
+    name: found.name,
+    email: found.email,
+    role: found.role,
+    child_age: found.child_age,
+    grade: found.grade,
+    avatar: found.avatar,
+    created_at: new Date().toISOString()
+  };
+  const authObj = {
+    token: `demo-token-${username}`,
+    user,
+    message: `Logged in as demo persona: ${user.name}`
+  };
+  localStorage.setItem("mindbridge_auth_user", JSON.stringify(user));
+  return authObj;
+}
+
+export function getStoredUser() {
+  try {
+    const raw = localStorage.getItem("mindbridge_auth_user");
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return DEMO_USERS_LIST[0]; // Default to Demo Child Ashrith
+}
+
+export function logoutUser() {
+  try {
+    localStorage.removeItem("mindbridge_auth_user");
+    localStorage.removeItem("mindbridge_auth_token");
+  } catch {}
+}
+

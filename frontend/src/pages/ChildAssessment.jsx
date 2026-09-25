@@ -153,7 +153,7 @@ export default function ChildAssessment({ setActiveTab }) {
     <div className="space-y-8 py-2 max-w-5xl mx-auto">
       
       {/* Page Title & Clinical Header */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
@@ -199,7 +199,7 @@ export default function ChildAssessment({ setActiveTab }) {
 
       {/* Historical Assessment Drawer */}
       {showHistory && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs animate-in fade-in duration-200">
+        <div className="bg-white border border-slate-200 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <History className="w-4 h-4 text-slate-700" />
@@ -317,7 +317,7 @@ export default function ChildAssessment({ setActiveTab }) {
               </div>
 
               {/* Total Score Meter Card */}
-              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col items-center justify-center shrink-0 min-w-[170px] text-center">
+              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 flex flex-col items-center justify-center shrink-0 min-w-[170px] text-center">
                 <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">PSC-17 Total Score</span>
                 <div className="mt-1 flex items-baseline gap-1">
                   <span className={`text-4xl font-extrabold tracking-tight ${
@@ -348,8 +348,8 @@ export default function ChildAssessment({ setActiveTab }) {
                   return (
                     <div 
                       key={key} 
-                      className={`p-4 rounded-xl border bg-white shadow-xs space-y-3 ${
-                        sub.flagged ? 'border-rose-300 ring-1 ring-rose-200' : 'border-slate-200'
+                      className={`p-4 rounded-xl border bg-white space-y-3 ${
+                        sub.flagged ? 'border-rose-300' : 'border-slate-200'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -399,7 +399,7 @@ export default function ChildAssessment({ setActiveTab }) {
             </div>
 
             {/* Evidence-Based Recommendations */}
-            <div className="mt-6 bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+            <div className="mt-6 bg-white border border-slate-200 rounded-xl p-5">
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-slate-700" />
                 <span>Targeted Non-Clinical Guidance &amp; Interventions</span>
@@ -460,7 +460,7 @@ export default function ChildAssessment({ setActiveTab }) {
         <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* Controls Bar: Age Selector, Progress & Demo Presets */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             
             {/* Age Selection */}
             <div className="flex items-center gap-3">
@@ -471,7 +471,7 @@ export default function ChildAssessment({ setActiveTab }) {
                 id="child-age"
                 value={childAge}
                 onChange={(e) => setChildAge(e.target.value)}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-800"
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800"
               >
                 {Array.from({ length: 15 }, (_, i) => i + 4).map(age => (
                   <option key={age} value={age}>{age} Years Old</option>
@@ -561,13 +561,12 @@ export default function ChildAssessment({ setActiveTab }) {
               filteredQuestions.map((q) => {
                 const currentVal = answers[String(q.id)];
                 const isAnswered = currentVal !== undefined;
-
                 return (
                   <div 
-                    key={q.id}
-                    className={`p-5 rounded-xl border transition-all ${
+                    key={q.id} 
+                    className={`p-5 rounded-xl border transition-colors ${
                       isAnswered 
-                        ? 'bg-white border-slate-300 shadow-xs' 
+                        ? 'bg-white border-slate-300' 
                         : 'bg-slate-50/50 border-slate-200'
                     }`}
                   >
@@ -602,9 +601,9 @@ export default function ChildAssessment({ setActiveTab }) {
                         <button
                           type="button"
                           onClick={() => handleSelectOption(q.id, 0)}
-                          className={`flex flex-col items-center justify-center p-2.5 rounded-lg border text-center transition-all ${
+                          className={`flex flex-col items-center justify-center p-2.5 rounded-lg border text-center transition-colors ${
                             currentVal === 0
-                              ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-xs'
+                              ? 'bg-slate-900 border-slate-900 text-white font-bold'
                               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-400 font-medium'
                           }`}
                         >
@@ -618,9 +617,9 @@ export default function ChildAssessment({ setActiveTab }) {
                         <button
                           type="button"
                           onClick={() => handleSelectOption(q.id, 1)}
-                          className={`flex flex-col items-center justify-center p-2.5 rounded-lg border text-center transition-all ${
+                          className={`flex flex-col items-center justify-center p-2.5 rounded-lg border text-center transition-colors ${
                             currentVal === 1
-                              ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-xs'
+                              ? 'bg-slate-900 border-slate-900 text-white font-bold'
                               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-400 font-medium'
                           }`}
                         >
@@ -634,9 +633,9 @@ export default function ChildAssessment({ setActiveTab }) {
                         <button
                           type="button"
                           onClick={() => handleSelectOption(q.id, 2)}
-                          className={`flex flex-col items-center justify-center p-2.5 rounded-lg border text-center transition-all ${
+                          className={`flex flex-col items-center justify-center p-2.5 rounded-lg border text-center transition-colors ${
                             currentVal === 2
-                              ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-xs'
+                              ? 'bg-slate-900 border-slate-900 text-white font-bold'
                               : 'bg-white border-slate-200 text-slate-700 hover:border-slate-400 font-medium'
                           }`}
                         >
@@ -656,7 +655,7 @@ export default function ChildAssessment({ setActiveTab }) {
           </div>
 
           {/* Submission Bar */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-4 z-20">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 sticky bottom-4 z-20">
             <div className="text-xs text-slate-600 font-medium">
               {answeredCount === totalCount ? (
                 <span className="text-emerald-700 font-bold flex items-center gap-1.5">
@@ -673,9 +672,9 @@ export default function ChildAssessment({ setActiveTab }) {
             <button
               type="submit"
               disabled={submitting || answeredCount < totalCount}
-              className={`flex items-center gap-2 px-6 py-2.5 text-xs font-bold rounded-lg transition-all ${
+              className={`flex items-center gap-2 px-6 py-2.5 text-xs font-bold rounded-lg transition-colors ${
                 answeredCount === totalCount && !submitting
-                  ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs cursor-pointer'
+                  ? 'bg-slate-900 hover:bg-slate-800 text-white cursor-pointer'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed'
               }`}
             >

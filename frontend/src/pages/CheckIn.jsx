@@ -32,7 +32,7 @@ const STRESS_LABELS = {
   5: "Level 5: Severe Overwhelm",
 };
 
-export default function CheckIn({ setActiveTab }) {
+export default function CheckIn({ setActiveTab, currentUser }) {
   const [selectedMood, setSelectedMood] = useState(null);
   const [sleepHours, setSleepHours] = useState(8.5);
   const [screenTime, setScreenTime] = useState(2.0);
@@ -56,6 +56,7 @@ export default function CheckIn({ setActiveTab }) {
 
     try {
       const payload = {
+        user_id: currentUser?.id || null,
         mood_score: selectedMood.score,
         mood_label: selectedMood.label,
         sleep_hours: parseFloat(sleepHours),
@@ -82,40 +83,66 @@ export default function CheckIn({ setActiveTab }) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto py-4 space-y-8">
+    <div className="max-w-[750px] mx-auto py-2 sm:py-4 space-y-5">
       
+      {/* Personalized Greeting Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl bg-amber-50/70 border border-amber-200">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl p-1.5 sm:p-2 bg-white rounded-xl border border-amber-200/80 shrink-0">
+            {currentUser?.avatar || "🧒"}
+          </span>
+          <div>
+            <h2 className="text-sm sm:text-base font-bold text-slate-900 leading-tight">
+              Welcome, {currentUser ? currentUser.name : "Friend"}! 🌟
+            </h2>
+            <p className="text-xs font-medium text-slate-600 mt-0.5">
+              {currentUser?.grade ? `${currentUser.grade} • ` : ""}How are you feeling right now? Tap an emoji below.
+            </p>
+          </div>
+        </div>
+
+        {!currentUser && (
+          <button
+            onClick={() => setActiveTab('auth')}
+            className="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 shrink-0 self-start sm:self-auto"
+          >
+            Sign in
+          </button>
+        )}
+      </div>
+
       {/* Page Title */}
       <div className="space-y-1">
-        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-          <Heart className="w-3.5 h-3.5 text-slate-400" />
+        <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+          <Heart className="w-3.5 h-3.5 text-slate-500" />
           <span>Daily Self-Report Protocol</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           Child Well-being Check-in
         </h1>
-        <p className="text-xs text-slate-500 leading-relaxed">
-          Record your current mood and lifestyle factors. All inputs are evaluated non-clinically.
+        <p className="text-xs text-slate-600 font-medium leading-relaxed">
+          Record your current mood and lifestyle factors. Scored in real-time with Scikit-Learn &amp; VADER NLP.
         </p>
       </div>
 
       {error && (
-        <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs font-medium flex items-center gap-2">
+        <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {!assessment ? (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           
           {/* Section 1: Mood Selection */}
-          <div className="card-surface p-6 space-y-4">
+          <div className="card-surface p-5 sm:p-6 rounded-2xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-slate-900">
+              <h3 className="font-bold text-sm text-slate-900">
                 1. Affective Mood State
               </h3>
               {selectedMood && (
-                <span className="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-800 border border-slate-200">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-slate-900 text-white">
                   Selected: {selectedMood.label}
                 </span>
               )}
@@ -129,16 +156,16 @@ export default function CheckIn({ setActiveTab }) {
                     key={m.score}
                     type="button"
                     onClick={() => setSelectedMood(m)}
-                    className={`p-3 rounded-xl border text-center transition-all flex flex-col items-center justify-between min-h-[110px] ${
+                    className={`p-3.5 rounded-xl border text-center transition-colors flex flex-col items-center justify-between min-h-[128px] ${
                       isSelected
-                        ? 'border-slate-900 bg-slate-50 ring-1 ring-slate-900 font-semibold'
-                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50/50'
+                        ? 'border-slate-900 bg-slate-100 font-bold'
+                        : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
                     }`}
                   >
-                    <span className="text-3xl my-1">{m.emoji}</span>
-                    <div>
-                      <div className="font-medium text-xs text-slate-900">{m.title}</div>
-                      <div className="text-[10px] text-slate-500 line-clamp-1">{m.desc}</div>
+                    <span className="text-3.5xl sm:text-4xl my-1">{m.emoji}</span>
+                    <div className="w-full">
+                      <div className={`text-xs ${isSelected ? 'font-extrabold text-slate-900' : 'font-bold text-slate-800'}`}>{m.title}</div>
+                      <div className="text-[10.5px] font-medium text-slate-600 mt-0.5 truncate">{m.desc}</div>
                     </div>
                   </button>
                 );
@@ -147,21 +174,21 @@ export default function CheckIn({ setActiveTab }) {
           </div>
 
           {/* Section 2: Lifestyle Parameters */}
-          <div className="card-surface p-6 space-y-5">
-            <h3 className="font-semibold text-sm text-slate-900">
+          <div className="card-surface p-5 sm:p-6 rounded-2xl border border-slate-200 space-y-4">
+            <h3 className="font-bold text-sm text-slate-900">
               2. Behavioral &amp; Lifestyle Parameters
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               
               {/* Sleep Hours */}
-              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
+              <div className="p-4 rounded-xl bg-slate-50/90 border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-slate-700 flex items-center gap-1.5">
-                    <Moon className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <Moon className="w-3.5 h-3.5 text-slate-600" />
                     <span>Sleep Last Night</span>
                   </span>
-                  <span className="font-mono font-semibold text-slate-900">{sleepHours} hrs</span>
+                  <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200 text-[11px]">{sleepHours} hrs</span>
                 </div>
                 <input
                   type="range"
@@ -170,23 +197,23 @@ export default function CheckIn({ setActiveTab }) {
                   step="0.5"
                   value={sleepHours}
                   onChange={(e) => setSleepHours(e.target.value)}
-                  className="w-full accent-slate-800 cursor-pointer"
+                  className="w-full accent-slate-900 cursor-pointer h-1.5 bg-slate-200 rounded-lg"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400">
+                <div className="flex justify-between text-[10.5px] font-medium text-slate-600">
                   <span>4h (Insufficient)</span>
-                  <span>9–11h ideal</span>
+                  <span className="font-semibold text-slate-700">9–11h ideal</span>
                   <span>12h</span>
                 </div>
               </div>
 
               {/* Screen Time */}
-              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
+              <div className="p-4 rounded-xl bg-slate-50/90 border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-slate-700 flex items-center gap-1.5">
-                    <Smartphone className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <Smartphone className="w-3.5 h-3.5 text-slate-600" />
                     <span>Screen Exposure</span>
                   </span>
-                  <span className="font-mono font-semibold text-slate-900">{screenTime} hrs</span>
+                  <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200 text-[11px]">{screenTime} hrs</span>
                 </div>
                 <input
                   type="range"
@@ -195,23 +222,23 @@ export default function CheckIn({ setActiveTab }) {
                   step="0.5"
                   value={screenTime}
                   onChange={(e) => setScreenTime(e.target.value)}
-                  className="w-full accent-slate-800 cursor-pointer"
+                  className="w-full accent-slate-900 cursor-pointer h-1.5 bg-slate-200 rounded-lg"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400">
+                <div className="flex justify-between text-[10.5px] font-medium text-slate-600">
                   <span>0h</span>
-                  <span>&le; 2h recommended</span>
+                  <span className="font-semibold text-slate-700">&le; 2h recommended</span>
                   <span>8h+</span>
                 </div>
               </div>
 
               {/* Physical Play */}
-              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
+              <div className="p-4 rounded-xl bg-slate-50/90 border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-slate-700 flex items-center gap-1.5">
-                    <Activity className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <Activity className="w-3.5 h-3.5 text-slate-600" />
                     <span>Physical Activity / Play</span>
                   </span>
-                  <span className="font-mono font-semibold text-slate-900">{physicalPlay} hrs</span>
+                  <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200 text-[11px]">{physicalPlay} hrs</span>
                 </div>
                 <input
                   type="range"
@@ -220,23 +247,23 @@ export default function CheckIn({ setActiveTab }) {
                   step="0.5"
                   value={physicalPlay}
                   onChange={(e) => setPhysicalPlay(e.target.value)}
-                  className="w-full accent-slate-800 cursor-pointer"
+                  className="w-full accent-slate-900 cursor-pointer h-1.5 bg-slate-200 rounded-lg"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400">
+                <div className="flex justify-between text-[10.5px] font-medium text-slate-600">
                   <span>0h (Sedentary)</span>
-                  <span>&ge; 1h recommended</span>
+                  <span className="font-semibold text-slate-700">&ge; 1h recommended</span>
                   <span>4h</span>
                 </div>
               </div>
 
               {/* School Stress */}
-              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200/80 space-y-2">
+              <div className="p-4 rounded-xl bg-slate-50/90 border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-slate-700 flex items-center gap-1.5">
-                    <BookOpen className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <BookOpen className="w-3.5 h-3.5 text-slate-600" />
                     <span>Academic / School Strain</span>
                   </span>
-                  <span className="font-medium text-slate-800">{STRESS_LABELS[schoolStress]}</span>
+                  <span className="font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200 text-[11px]">{STRESS_LABELS[schoolStress]}</span>
                 </div>
                 <input
                   type="range"
@@ -245,11 +272,11 @@ export default function CheckIn({ setActiveTab }) {
                   step="1"
                   value={schoolStress}
                   onChange={(e) => setSchoolStress(e.target.value)}
-                  className="w-full accent-slate-800 cursor-pointer"
+                  className="w-full accent-slate-900 cursor-pointer h-1.5 bg-slate-200 rounded-lg"
                 />
-                <div className="flex justify-between text-[10px] text-slate-400">
+                <div className="flex justify-between text-[10.5px] font-medium text-slate-600">
                   <span>1 (Minimal)</span>
-                  <span>3 (Moderate)</span>
+                  <span className="font-semibold text-slate-700">3 (Moderate)</span>
                   <span>5 (Extreme)</span>
                 </div>
               </div>
@@ -258,20 +285,25 @@ export default function CheckIn({ setActiveTab }) {
           </div>
 
           {/* Section 3: Reflective Journal */}
-          <div className="card-surface p-6 space-y-3">
+          <div className="card-surface p-5 sm:p-6 rounded-2xl border border-slate-200 space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-slate-900">
-                3. Reflective Journal Entry <span className="text-xs text-slate-400 font-normal">(Optional)</span>
-              </h3>
-              <div className="flex items-center gap-1 text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                <Lock className="w-3 h-3 text-slate-400" />
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-sm text-slate-900">
+                  3. Reflective Journal Entry
+                </h3>
+                <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                  Optional
+                </span>
+              </div>
+              <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+                <Lock className="w-3 h-3 text-slate-500" />
                 <span>Encrypted In-Memory Only</span>
               </div>
             </div>
 
-            <p className="text-xs text-slate-500 leading-relaxed">
+            <p className="text-xs text-slate-600 font-medium leading-relaxed">
               Express your feelings freely. Text is parsed for linguistic valence using VADER NLP 
-              and is <strong>never written to disk or shared with guardians</strong> (DPDP Act 2023, Section 9).
+              and is <strong>never written to disk or shared with guardians</strong> (Section 9 DPDP Act, 2023).
             </p>
 
             <textarea
@@ -279,16 +311,16 @@ export default function CheckIn({ setActiveTab }) {
               value={journalText}
               onChange={(e) => setJournalText(e.target.value)}
               placeholder="Reflect on your day: What went well? What caused concern or stress?"
-              className="w-full p-3.5 rounded-lg bg-white border border-slate-300 focus:border-slate-600 focus:ring-1 focus:ring-slate-600 outline-none text-xs text-slate-800 placeholder:text-slate-400 transition-colors resize-none"
+              className="w-full p-3.5 rounded-xl bg-white border border-slate-300 focus:border-slate-800 outline-none text-xs text-slate-800 placeholder:text-slate-400 transition-colors resize-none leading-relaxed font-normal"
             />
           </div>
 
           {/* Submit Action */}
-          <div className="pt-2">
+          <div className="pt-1">
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

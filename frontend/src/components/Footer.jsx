@@ -36,6 +36,11 @@ export default function Footer({ setActiveTab }) {
                 </button>
               </li>
               <li>
+                <button onClick={() => setActiveTab('assessment')} className="hover:text-slate-900 transition-colors">
+                  Child Assessment (PSC-17)
+                </button>
+              </li>
+              <li>
                 <button onClick={() => setActiveTab('checkin')} className="hover:text-slate-900 transition-colors">
                   Daily Check-in
                 </button>
@@ -94,7 +99,7 @@ export default function Footer({ setActiveTab }) {
         {/* Bottom Bar */}
         <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400">
           <p>© 2026–2027 Presidency University • B.Tech Computer Science and Engineering.</p>
-          <p>Phase 2 Implementation Milestone (60% Review)</p>
+          <p>Full System Implementation &amp; Complete Academic Prototype</p>
         </div>
 
       </div>

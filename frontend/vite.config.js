@@ -13,6 +13,10 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  build: {
+    target: 'esnext',
+    cssMinify: true,
+    chunkSizeWarningLimit: 600
   }
 })
-

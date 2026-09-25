@@ -32,3 +32,5 @@ data/*.sqlite3
 # Node dependencies & builds
 node_modules/
 dist/
+lighthouse*.json
+

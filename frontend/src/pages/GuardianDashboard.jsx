@@ -35,7 +35,7 @@ const TIER_COLORS = {
   "Elevated Risk / Action Advised": "#dc2626",
 };
 
-export default function GuardianDashboard({ setActiveTab, onDemoSeeded }) {
+export default function GuardianDashboard({ setActiveTab, onDemoSeeded, currentUser }) {
   const [metrics, setMetrics] = useState(null);
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -122,6 +122,37 @@ export default function GuardianDashboard({ setActiveTab, onDemoSeeded }) {
   return (
     <div className="max-w-6xl mx-auto py-4 space-y-6">
       
+      {/* Caregiver Oversight Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-emerald-50/70 border border-emerald-200">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl p-2 bg-white rounded-xl border border-emerald-200/80">
+            {currentUser?.avatar || "👨‍👩‍👧"}
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-900">
+                {currentUser?.role === 'guardian' ? `Caregiver: ${currentUser.name}` : currentUser?.role === 'clinician' ? `Clinical Review: ${currentUser.name}` : `Guardian Analytics`}
+              </h2>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 uppercase">
+                Active Monitoring
+              </span>
+            </div>
+            <p className="text-xs text-slate-500">
+              Observing longitudinal records for: <span className="font-bold text-slate-700">Ashrith (Grade 6, Age 11)</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab('auth')}
+            className="text-xs font-bold px-3 py-1.5 rounded-xl bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-50 transition-colors"
+          >
+            Switch Profile
+          </button>
+        </div>
+      </div>
+
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

@@ -1,19 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
-import CheckIn from './pages/CheckIn';
-import ChildAssessment from './pages/ChildAssessment';
-import CopingToolkit from './pages/CopingToolkit';
-import GuardianDashboard from './pages/GuardianDashboard';
-import CrisisResources from './pages/CrisisResources';
-import Diagnostics from './pages/Diagnostics';
-import { checkHealth, seedDemo } from './api';
+import { checkHealth, seedDemo, getStoredUser, demoLoginUser, logoutUser } from './api';
+
+// Lazily load tab views for instant initial page loading & reduced initial bundle
+const CheckIn = lazy(() => import('./pages/CheckIn'));
+const ChildAssessment = lazy(() => import('./pages/ChildAssessment'));
+const CopingToolkit = lazy(() => import('./pages/CopingToolkit'));
+const GuardianDashboard = lazy(() => import('./pages/GuardianDashboard'));
+const CrisisResources = lazy(() => import('./pages/CrisisResources'));
+const Diagnostics = lazy(() => import('./pages/Diagnostics'));
+const Auth = lazy(() => import('./pages/Auth'));
+
+function PageLoader() {
+  return (
+    <div className="py-20 flex flex-col items-center justify-center space-y-3 text-slate-500">
+      <div className="w-6 h-6 border-2 border-slate-300 border-t-slate-900 rounded-full animate-spin" />
+      <span className="text-xs font-medium">Loading module...</span>
+    </div>
+  );
+}
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [backendOnline, setBackendOnline] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => getStoredUser());
 
   useEffect(() => {
     async function verifyBackend() {
@@ -25,7 +38,7 @@ export default function App() {
       }
     }
     verifyBackend();
-    const interval = setInterval(verifyBackend, 10000);
+    const interval = setInterval(verifyBackend, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -40,11 +53,35 @@ export default function App() {
     }
   };
 
+  const handleSwitchUser = async (username) => {
+    try {
+      const res = await demoLoginUser(username);
+      setCurrentUser(res.user);
+      setToastMessage(`Switched to: ${res.user.name} (${res.user.role})`);
+      setTimeout(() => setToastMessage(null), 4000);
+      if (res.user.role === 'guardian') {
+        setActiveTab('dashboard');
+      } else {
+        setActiveTab('checkin');
+      }
+    } catch (err) {
+      setToastMessage("Error switching profile");
+    }
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    setCurrentUser(null);
+    setToastMessage("Signed out successfully");
+    setActiveTab('auth');
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-slate-900 text-white text-xs font-bold shadow-2xl border border-slate-700 flex items-center gap-2 animate-in fade-in slide-in-from-bottom-5">
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl bg-slate-900 text-white text-xs font-semibold border border-slate-800 flex items-center gap-2">
           <span>⚡</span>
           <span>{toastMessage}</span>
         </div>
@@ -56,17 +93,40 @@ export default function App() {
         setActiveTab={setActiveTab} 
         onQuickSeed={handleQuickSeed}
         backendOnline={backendOnline}
+        currentUser={currentUser}
+        onSwitchUser={handleSwitchUser}
+        onLogout={handleLogout}
       />
 
-      {/* Main Content Area */}
+      {/* Main Content Area with Code-Splitting Suspense */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'home' && <Home setActiveTab={setActiveTab} onQuickSeed={handleQuickSeed} />}
-        {activeTab === 'checkin' && <CheckIn setActiveTab={setActiveTab} />}
-        {activeTab === 'assessment' && <ChildAssessment setActiveTab={setActiveTab} />}
-        {activeTab === 'coping' && <CopingToolkit />}
-        {activeTab === 'dashboard' && <GuardianDashboard setActiveTab={setActiveTab} onDemoSeeded={() => setToastMessage("Demo history seeded!")} />}
-        {activeTab === 'crisis' && <CrisisResources />}
-        {activeTab === 'diagnostics' && <Diagnostics />}
+        
+        <Suspense fallback={<PageLoader />}>
+          {activeTab === 'auth' && (
+            <Auth 
+              currentUser={currentUser} 
+              onAuthSuccess={(user) => {
+                setCurrentUser(user);
+                setToastMessage(`Authenticated as ${user.name}`);
+                setTimeout(() => setToastMessage(null), 4000);
+              }} 
+              setActiveTab={setActiveTab} 
+            />
+          )}
+          {activeTab === 'checkin' && <CheckIn setActiveTab={setActiveTab} currentUser={currentUser} />}
+          {activeTab === 'assessment' && <ChildAssessment setActiveTab={setActiveTab} currentUser={currentUser} />}
+          {activeTab === 'coping' && <CopingToolkit />}
+          {activeTab === 'dashboard' && (
+            <GuardianDashboard 
+              setActiveTab={setActiveTab} 
+              currentUser={currentUser} 
+              onDemoSeeded={() => setToastMessage("Demo history seeded!")} 
+            />
+          )}
+          {activeTab === 'crisis' && <CrisisResources />}
+          {activeTab === 'diagnostics' && <Diagnostics />}
+        </Suspense>
       </main>
 
       {/* Footer */}

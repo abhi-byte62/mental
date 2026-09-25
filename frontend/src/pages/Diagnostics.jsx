@@ -210,7 +210,7 @@ export default function Diagnostics() {
             rows="2"
             value={testText}
             onChange={(e) => setTestText(e.target.value)}
-            className="w-full p-3 rounded-lg bg-white border border-slate-300 focus:border-slate-600 focus:ring-1 focus:ring-slate-600 text-xs text-slate-800 outline-none"
+            className="w-full p-3 rounded-lg bg-white border border-slate-300 focus:border-slate-800 text-xs text-slate-800 outline-none"
             placeholder="Enter test text..."
           />
 

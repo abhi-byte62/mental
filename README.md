@@ -43,6 +43,7 @@ B.Tech – Computer Science and Engineering
 
 ## Phase 2 — Full Application Implementation (Complete ✅)
 
+- **Role-Based Authentication & Persona Hub:** Sign In and Sign Up portals for **Child** (custom avatars & grade/age), **Guardian** (caregiver email & child oversight), and **Clinician/Counselor**, along with 1-click instant demo persona switching.
 - **Child Interactive Portal:** Emoji mood picker + lifestyle sliders + optional reflective journal (no PII retained).
 - **Standardized Pediatric Assessment (PSC-17):** Clinically validated 17-item Pediatric Symptom Checklist (Gardner et al., 1999) measuring internalizing, attention, and conduct subscales.
 - **ML Risk Classifier:** Random Forest (200 trees, StandardScaler, 5-fold CV) — 77.25% CV accuracy, 0.88 weighted F1, perfect recall on Elevated Risk tier.
@@ -51,7 +52,7 @@ B.Tech – Computer Science and Engineering
 - **Guardian Dashboard:** Longitudinal trend charts, rolling averages, subscale risk breakdown, distress alerts — privacy-preserving (Section 9 DPDP Act compliant).
 - **Dual Interface Deployments:** Modern full-stack Web App (FastAPI + React 18 + Tailwind/Lucide/Recharts) and standalone Streamlit application.
 - **Crisis Referral:** Childline 1098, Tele-MANAS 14416, NIMHANS, iCall TISS.
-- **Automated Test Suite:** Comprehensive Python unittest suite covering endpoints, ML inference, and assessment evaluation.
+- **Automated Test Suite:** 15 comprehensive unit tests covering endpoints, authentication, ML inference, and assessment evaluation.
 
 ---
 
@@ -72,7 +73,17 @@ Open **http://localhost:5173** in your browser.
 
 ---
 
-### Option B: Standalone Streamlit Application
+### Option B: 1-Click Cloud Deployment (Vercel)
+
+This repository is pre-configured with `vercel.json` and dual-mode client intelligence:
+1. Push this repository to your GitHub account.
+2. Import the repository in [Vercel](https://vercel.com).
+3. Vercel automatically detects `vercel.json`, executes the build, and deploys the live web application!
+4. *(Optional)* Set `VITE_API_BASE_URL` in Vercel Environment Variables if connecting to an external FastAPI backend instance.
+
+---
+
+### Option C: Standalone Streamlit Application
 
 ```bash
 # 1. Install dependencies
